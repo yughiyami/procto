@@ -1,17 +1,24 @@
 {
+  "name": "@procto/shared-order-client",
   "version": "0.0.0",
-  "name": "shared-order-client",
+  "private": true,
   "type": "module",
-  "exports": "./dist/index.js",
-  "typings": "dist/index.d.ts",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  },
   "scripts": {
-    "build": "tsc"
+    "typecheck": "tsc --noEmit -p tsconfig.json"
   },
   "dependencies": {
-    "@stellar/stellar-sdk": "^16.0.1",
+    "@stellar/stellar-sdk": "^17.4.0",
     "buffer": "6.0.3"
   },
   "devDependencies": {
-    "typescript": "^5.6.2"
+    "typescript": "^5.9.0"
   }
 }

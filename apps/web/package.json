@@ -8,17 +8,21 @@
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
-    "icons": "node scripts/generate-icons.mjs"
+    "icons": "node scripts/generate-icons.mjs",
+    "test": "vitest run",
+    "e2e": "tsx ../../scripts/e2e-testnet.ts"
   },
   "dependencies": {
     "@izumi/api-client": "workspace:*",
     "@izumi/contracts": "workspace:*",
     "@izumi/ui": "workspace:*",
     "@tanstack/react-query": "^5",
-    "@vapi-ai/web": "2.7.0",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
-    "react-router-dom": "^7"
+    "react-router-dom": "^7",
+    "@procto/shared-order-client": "workspace:*",
+    "@stellar/stellar-sdk": "^17.4.0",
+    "@creit.tech/stellar-wallets-kit": "^2.8.0"
   },
   "devDependencies": {
     "@types/react": "^19",
@@ -26,6 +30,9 @@
     "@vitejs/plugin-react": "^5",
     "sharp": "^0.35.4",
     "typescript": "^5.9.0",
-    "vite": "^7"
+    "vite": "^7",
+    "vitest": "^3",
+    "@types/node": "^24",
+    "tsx": "^4"
   }
 }
