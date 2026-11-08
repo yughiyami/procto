@@ -24,6 +24,7 @@ import {
   getBalances,
   getChainOrder,
   getOrderEvents,
+  httpSponsorSubmitter,
   markDelivered,
   offerShare,
   prepareAccount,
@@ -45,8 +46,14 @@ process.env.PATH = `${process.env.PATH ?? ''};${process.env.USERPROFILE ?? ''}\\
 const secretOf = (alias: string) => execFileSync('stellar', ['keys', 'secret', alias], { encoding: 'utf8' }).trim();
 const signerOf = (alias: string) => keypairSigner(secretOf(alias));
 
-// Fee sponsorship, executed in-process with the very same code the Vercel function runs.
-const sponsor: Submitter = (xdr) => sponsorAndSubmit(xdr, { SPONSOR_SECRET: env.SPONSOR_SECRET });
+// Fee sponsorship. By default it runs in-process with the very same code the Vercel
+// function runs; set E2E_BASE_URL (e.g. https://procto-lovat.vercel.app) to go through
+// the deployed /api/sponsor endpoint instead.
+const baseUrl = process.env.E2E_BASE_URL?.replace(/\/$/, '');
+const sponsor: Submitter = baseUrl
+  ? httpSponsorSubmitter(`${baseUrl}/api/sponsor`)
+  : (xdr) => sponsorAndSubmit(xdr, { SPONSOR_SECRET: env.SPONSOR_SECRET });
+if (baseUrl) console.log(`Using deployed sponsor endpoint: ${baseUrl}/api/sponsor`);
 const hashes: Array<[string, string, boolean]> = [];
 const log = (label: string, outcome: { hash: string; sponsored: boolean }) => {
   hashes.push([label, outcome.hash, outcome.sponsored]);

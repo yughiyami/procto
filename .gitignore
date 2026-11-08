@@ -13,3 +13,7 @@ coverage/
 target/
 test_snapshots/
 .atl/
+
+.vercel
+.env*
+!.env.example
