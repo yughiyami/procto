@@ -1,0 +1,231 @@
+/*
+ * /orders/:id layout only. Every color/spacing/radius value reads from the @izumi/ui
+ * design tokens (imported globally in main.tsx) — never redefined here.
+ */
+
+.order-detail {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4, 1rem);
+}
+
+.order-detail__header-links {
+  display: flex;
+  gap: var(--space-3, 0.75rem);
+  font-size: var(--text-sm, 0.875rem);
+}
+
+.order-detail__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-4, 1rem);
+}
+
+@media (min-width: 1024px) {
+  .order-detail__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+  }
+
+  .order-detail__summary,
+  .order-detail__feasibility {
+    grid-column: 1 / -1;
+  }
+}
+
+.order-detail__missing-id {
+  padding: var(--space-4, 1rem);
+}
+
+/* ---------- Summary ---------- */
+
+.order-detail__summary-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-3, 0.75rem);
+  margin: 0 0 var(--space-4, 1rem);
+}
+
+@media (min-width: 640px) {
+  .order-detail__summary-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.order-detail__summary-grid dt {
+  font-size: var(--text-xs, 0.75rem);
+  color: var(--color-text-muted, #5b6b74);
+  margin-bottom: 2px;
+}
+
+.order-detail__summary-grid dd {
+  margin: 0;
+  font-weight: 600;
+}
+
+.order-detail__summary-spec {
+  grid-column: 1 / -1;
+}
+
+.order-detail__summary-spec dd {
+  font-weight: 400;
+  white-space: pre-wrap;
+}
+
+/* ---------- Feasibility ---------- */
+
+.order-detail__reason-list {
+  margin: 0;
+  padding-left: var(--space-4, 1rem);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1, 0.25rem);
+}
+
+.order-detail__coverage {
+  margin-top: var(--space-4, 1rem);
+}
+
+.order-detail__coverage-bar,
+.order-detail__progress-bar {
+  height: 10px;
+  border-radius: var(--radius-full, 999px);
+  background: var(--color-border, #e2e8ea);
+  overflow: hidden;
+}
+
+.order-detail__coverage-fill {
+  display: block;
+  height: 100%;
+  background: var(--color-primary, #0b6e4f);
+  border-radius: var(--radius-full, 999px);
+  transition: width var(--transition-fast, 150ms ease);
+}
+
+.order-detail__progress-fill {
+  display: block;
+  height: 100%;
+  background: var(--color-info, #1d6fa5);
+  border-radius: var(--radius-full, 999px);
+  transition: width var(--transition-fast, 150ms ease);
+}
+
+.order-detail__coverage-caption {
+  margin: var(--space-2, 0.5rem) 0 0;
+  font-size: var(--text-sm, 0.875rem);
+  color: var(--color-text-muted, #5b6b74);
+}
+
+.order-detail__feasibility-totals {
+  margin: var(--space-4, 1rem) 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4, 1rem);
+}
+
+.order-detail__feasibility-totals dt {
+  font-size: var(--text-xs, 0.75rem);
+  color: var(--color-text-muted, #5b6b74);
+}
+
+.order-detail__feasibility-totals dd {
+  margin: 0;
+  font-weight: 600;
+}
+
+/* ---------- Contributions ---------- */
+
+.order-detail__contribution-flags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1, 0.25rem);
+}
+
+/* ---------- Shared helpers ---------- */
+
+.order-detail__hint {
+  margin: var(--space-2, 0.5rem) 0;
+  font-size: var(--text-sm, 0.875rem);
+  color: var(--color-text-muted, #5b6b74);
+}
+
+.order-detail__form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3, 0.75rem);
+  margin-top: var(--space-3, 0.75rem);
+}
+
+.order-detail__form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-3, 0.75rem);
+}
+
+/* ---------- Quote preview ---------- */
+
+.order-detail__quote-preview {
+  padding: var(--space-3, 0.75rem);
+  border: 1px solid var(--color-border, #e2e8ea);
+  border-radius: var(--radius-md, 8px);
+  background: var(--color-surface, #f6f8f8);
+}
+
+.order-detail__quote-preview p {
+  margin: 0;
+}
+
+.order-detail__quote-preview p + p {
+  margin-top: var(--space-1, 0.25rem);
+}
+
+.order-detail__quote-preview-negative {
+  color: var(--color-danger-text, #b3261e);
+  font-weight: 600;
+}
+
+/* ---------- Deliveries ---------- */
+
+.order-detail__progress {
+  margin: var(--space-3, 0.75rem) 0;
+}
+
+.order-detail__progress p {
+  margin: var(--space-2, 0.5rem) 0 0;
+  font-size: var(--text-sm, 0.875rem);
+  color: var(--color-text-muted, #5b6b74);
+}
+
+/* ---------- Invitations ---------- */
+
+.order-detail__invitation-link {
+  word-break: break-all;
+  padding: var(--space-3, 0.75rem);
+  border: 1px solid var(--color-border, #e2e8ea);
+  border-radius: var(--radius-md, 8px);
+  background: var(--color-surface, #f6f8f8);
+  font-family: var(--font-mono, monospace);
+  font-size: var(--text-sm, 0.875rem);
+}
+
+/* ---------- Danger zone ---------- */
+
+.order-detail__danger {
+  border-color: var(--color-danger, #b3261e);
+}
+
+.order-detail__sections { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.order-detail__sections button { min-height: 44px; padding: var(--space-2) var(--space-3); border: 1px solid var(--color-border); border-radius: var(--radius-md); background: var(--color-surface); color: var(--color-text); cursor: pointer; }
+.order-detail__sections button[aria-pressed="true"] { background: var(--color-primary); color: var(--color-on-primary); }
+.order-detail__grid > * { min-width: 0; }
+.order-detail__summary-grid dd { overflow-wrap: anywhere; }
+@media (max-width: 639px) {
+  .order-detail__sections { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .order-detail__header-links { flex-wrap: wrap; }
+  .order-detail__header-links a { min-height: 44px; display: flex; align-items: center; }
+  .order-detail__form-actions { flex-wrap: wrap; }
+}
+
+.order-detail__section-body:not([hidden]) { display: grid; gap: var(--space-4); }
+.order-detail__grid > div { grid-column: 1 / -1; }
+@media (min-width: 1024px) { .order-detail__section-body:not([hidden]) { grid-template-columns: repeat(2, minmax(0, 1fr)); } }

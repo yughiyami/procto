@@ -1,0 +1,11 @@
+.sales-page { display: grid; gap: 1.25rem; }
+.sales-page__metrics { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 1rem; }
+.sales-page__metrics article, .sales-page__list article { padding: 1.2rem; border: 1px solid var(--border-subtle,#dfe3e0); border-radius: 1rem; background: var(--surface-raised,#fff); }
+.sales-page__metrics article { display: grid; gap: .5rem; }
+.sales-page__metrics strong { font-size: 2rem; }
+.sales-page__list, .sales-page__form { display: grid; gap: 1rem; }
+.sales-page__list article { display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
+.sales-page__list h2 { margin: 0 0 .7rem; font-size: 1.1rem; overflow-wrap: anywhere; }
+.sales-page__list p { margin: .6rem 0; overflow-wrap: anywhere; }
+.sales-page select { width: 100%; min-height: 44px; padding: .65rem; border: 1px solid var(--border-subtle,#b8c0bd); border-radius: .6rem; font: inherit; background: var(--surface-raised,#fff); color: inherit; }
+@media (max-width: 700px) { .sales-page__metrics { grid-template-columns: repeat(2,minmax(0,1fr)); } .sales-page__list article { display: grid; } .sales-page__list button { width: 100%; } .sales-page input,.sales-page select { font-size: 16px; } }

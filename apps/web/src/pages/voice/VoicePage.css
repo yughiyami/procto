@@ -1,0 +1,8 @@
+.voice-page { display: grid; gap: 1.25rem; max-width: 960px; margin-inline: auto; }
+.voice-page__panel { padding: clamp(1rem, 3vw, 1.5rem); border: 1px solid var(--color-border, #deded8); border-radius: 1rem; display: grid; gap: 1rem; }
+.voice-page__panel h2, .voice-page__panel p { margin: 0; }
+.voice-page__modes, .voice-page__actions { display: flex; flex-wrap: wrap; gap: .75rem; }
+.voice-page__consent { display: flex; align-items: flex-start; gap: .75rem; line-height: 1.5; }
+.voice-page__consent input { width: 1.25rem; height: 1.25rem; flex-shrink: 0; margin-top: .15rem; }
+.voice-page__transcript { display: grid; gap: 1rem; padding-left: 1.25rem; overflow-wrap: anywhere; }
+@media (max-width: 540px) { .voice-page__actions > *, .voice-page__modes > * { flex: 1 1 100%; min-height: 48px; } }

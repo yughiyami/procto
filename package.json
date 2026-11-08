@@ -1,0 +1,35 @@
+{
+  "name": "izumi",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@11.9.0",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "pnpm -r build",
+    "typecheck": "pnpm -r typecheck",
+    "test": "pnpm -r test",
+    "lint": "pnpm -r --if-present lint",
+    "dev": "pnpm --parallel --filter \"./apps/*\" dev",
+    "dev:api": "pnpm --filter @izumi/api dev",
+    "dev:web": "pnpm --filter @izumi/web dev",
+    "dev:mobile": "pnpm --filter @izumi/mobile start",
+    "mobile:web": "node scripts/build-mobile-web.mjs",
+    "mobile:api": "node scripts/start-mobile-api.mjs",
+    "mobile:gateway": "node scripts/mobile-demo-server.mjs",
+    "mobile:test": "pnpm --filter @izumi/mobile test && node --test scripts/mobile-demo-server.test.mjs",
+    "worker": "pnpm --filter @izumi/api worker",
+    "agents:doctor": "node --env-file-if-exists=.env scripts/agent-doctor.mjs",
+    "agents:start": "node scripts/agent-runtime.mjs",
+    "crypto:demo": "node scripts/contracts/local/server.mjs",
+    "db:migrate": "pnpm --filter @izumi/api db:migrate",
+    "admin:create": "pnpm --filter @izumi/api admin:create",
+    "seed:demo": "pnpm --filter @izumi/api seed:demo",
+    "market:crawl": "node scripts/market-crawl.mjs"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.0"
+  }
+}

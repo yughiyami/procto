@@ -1,0 +1,31 @@
+{
+  "name": "@izumi/web",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit",
+    "icons": "node scripts/generate-icons.mjs"
+  },
+  "dependencies": {
+    "@izumi/api-client": "workspace:*",
+    "@izumi/contracts": "workspace:*",
+    "@izumi/ui": "workspace:*",
+    "@tanstack/react-query": "^5",
+    "@vapi-ai/web": "2.7.0",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "react-router-dom": "^7"
+  },
+  "devDependencies": {
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "@vitejs/plugin-react": "^5",
+    "sharp": "^0.35.4",
+    "typescript": "^5.9.0",
+    "vite": "^7"
+  }
+}

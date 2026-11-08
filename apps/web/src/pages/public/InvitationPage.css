@@ -1,0 +1,92 @@
+.invitation {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4, 1rem);
+}
+
+.invitation__title {
+  font-size: var(--text-xl, 1.25rem);
+  margin: 0;
+}
+
+.invitation__summary {
+  background: var(--color-surface-raised, #f4f6f7);
+  border-radius: var(--radius-md, 8px);
+  padding: var(--space-3, 0.75rem);
+}
+
+.invitation__supplier,
+.invitation__customer,
+.invitation__confirmation {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4, 1rem);
+}
+
+.invitation__form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4, 1rem);
+}
+
+.invitation__form .izu-input,
+.invitation__form .izu-textarea,
+.invitation__form .izu-money-input {
+  min-height: 44px;
+  width: 100%;
+}
+
+.invitation__line-total {
+  margin: calc(-1 * var(--space-2, 0.5rem)) 0 0;
+  font-size: var(--text-sm, 0.875rem);
+  color: var(--color-text, #10151a);
+}
+
+.invitation__checkbox {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2, 0.5rem);
+  min-height: 44px;
+  font-size: var(--text-sm, 0.875rem);
+}
+
+.invitation__checkbox input {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.invitation__hint {
+  margin: calc(-1 * var(--space-2, 0.5rem)) 0 0;
+  font-size: var(--text-xs, 0.75rem);
+  color: var(--color-text-muted, #5b6b73);
+}
+
+.invitation__field-error {
+  margin: 0;
+  color: var(--color-danger-text, #b3261e);
+  font-size: var(--text-xs, 0.75rem);
+}
+
+.invitation__footer-note {
+  margin: 0;
+  font-size: var(--text-xs, 0.75rem);
+  color: var(--color-text-muted, #5b6b73);
+  text-align: center;
+}
+
+.invitation__retry {
+  min-height: 44px;
+  padding: 0 var(--space-4, 1rem);
+  border: 1px solid var(--color-border, #e2e8ea);
+  border-radius: var(--radius-md, 8px);
+  background: var(--color-surface, #ffffff);
+  color: var(--color-text, #10151a);
+  cursor: pointer;
+  align-self: flex-start;
+}
+
+.invitation__retry:hover {
+  background: var(--color-surface-raised, #f4f6f7);
+}

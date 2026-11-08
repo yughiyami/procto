@@ -1,0 +1,14 @@
+node_modules/
+dist/
+dist-mobile/
+.expo/
+.env
+.env.*
+!.env.example
+coverage/
+*.log
+
+# Stellar
+.stellar/
+target/
+test_snapshots/
