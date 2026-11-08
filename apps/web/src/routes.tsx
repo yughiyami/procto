@@ -1,6 +1,6 @@
 import { Suspense, lazy } from 'react';
 import type { ReactNode } from 'react';
-import { Navigate, createBrowserRouter } from 'react-router-dom';
+import { createBrowserRouter } from 'react-router-dom';
 import { AppLayout } from './layout/AppLayout';
 import { PublicLayout } from './layout/PublicLayout';
 import { RouteError } from './components/RouteError';
@@ -14,6 +14,7 @@ const OrderFinancePage = lazy(() => import('./pages/orders/OrderFinancePage'));
 const OrderEvidencePage = lazy(() => import('./pages/orders/OrderEvidencePage'));
 const SuppliersPage = lazy(() => import('./pages/suppliers/SuppliersPage'));
 const FinanceDashboardPage = lazy(() => import('./pages/finance/FinanceDashboardPage'));
+const LandingPage = lazy(() => import('./pages/landing/LandingPage'));
 const ProviderPage = lazy(() => import('./pages/provider/ProviderPage'));
 const InvestorPage = lazy(() => import('./pages/investor/InvestorPage'));
 const ReceiptPage = lazy(() => import('./pages/receipt/ReceiptPage'));
@@ -29,6 +30,13 @@ export const router = createBrowserRouter([
     element: <PublicLayout />,
     errorElement: <RouteError />,
     children: [{ path: '/i/:token', element: withSuspense(<InvitationPage />) }],
+  },
+  {
+    errorElement: <RouteError />,
+    children: [
+      { path: '/', element: withSuspense(<LandingPage />) },
+      { path: '/como-funciona', element: withSuspense(<LandingPage />) },
+    ],
   },
   {
     element: <AppLayout />,
@@ -47,7 +55,6 @@ export const router = createBrowserRouter([
       { path: '/comprobante/:chainId', element: withSuspense(<ReceiptPage />) },
       { path: '/proveedores', element: withSuspense(<SuppliersPage />) },
       { path: '/finanzas', element: withSuspense(<FinanceDashboardPage />) },
-      { path: '/', element: <Navigate to="/inicio" replace /> },
     ],
   },
   { path: '*', errorElement: <RouteError />, element: withSuspense(<NotFoundPage />) },
