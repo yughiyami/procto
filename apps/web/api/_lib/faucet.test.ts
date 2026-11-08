@@ -4,7 +4,7 @@ import { TOKENS } from '../../src/stellar/config.js';
 import { FAUCET_AMOUNT, FAUCET_BALANCE_CAP, assertFaucetEligible, readPusdBalance } from './faucet.js';
 import { SponsorError } from './sponsor.js';
 
-const account = (balances: object[]) => ({ balances });
+const account = (balances: Array<Record<string, string>>) => ({ balances: balances as never });
 const pusd = (balance: string) => ({ asset_type: 'credit_alpha4', asset_code: 'PUSD', asset_issuer: TOKENS.PUSD.issuer, balance });
 
 describe('readPusdBalance', () => {

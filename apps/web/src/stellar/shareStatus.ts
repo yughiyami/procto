@@ -6,7 +6,7 @@ export type ShareLike = {
   paid: boolean;
   refunded: boolean;
   delivered: boolean;
-  offer_price?: bigint | undefined;
+  offer_price?: bigint | null | undefined;
 };
 
 export type ShareStateKey = 'pending' | 'escrow' | 'delivered' | 'offered' | 'paid' | 'refunded';
@@ -15,7 +15,7 @@ export function shareState(share: ShareLike, status: OrderStatusName): { key: Sh
   if (share.paid) return { key: 'paid', label: 'Pagado' };
   if (share.refunded) return { key: 'refunded', label: 'Devuelto al comprador' };
   if (status === 'Created') return { key: 'pending', label: 'Pendiente de depósito' };
-  if (share.offer_price !== undefined) return { key: 'offered', label: 'Adelanto ofrecido' };
+  if (share.offer_price != null) return { key: 'offered', label: 'Adelanto ofrecido' };
   if (share.delivered) return { key: 'delivered', label: 'Entrega avisada, falta confirmar' };
   return { key: 'escrow', label: 'En depósito en garantía' };
 }

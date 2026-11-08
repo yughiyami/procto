@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { Alert, Badge, Button, EmptyState, PageHeader } from '@izumi/ui';
@@ -126,6 +126,11 @@ export default function ProviderPage() {
   const refresh = useRefreshChain();
   const suppliers = useQuery({ queryKey: ['suppliers'], queryFn: apiClient.listSuppliers });
   const orders = useQuery({ queryKey: ['chain-orders'], queryFn: () => listChainOrders(30), refetchInterval: 15_000 });
+
+  // The wallet slot is keyed by workshop, so pin a workshop as soon as the list is known.
+  useEffect(() => {
+    if (!workshopId && suppliers.data?.[0]) setWorkshopId(suppliers.data[0].id);
+  }, [workshopId, suppliers.data, setWorkshopId]);
 
   const mine = connection && orders.data ? mineAsSupplier(flattenShares(orders.data), connection.address) : [];
 

@@ -28,7 +28,7 @@ function SplitDiagram() {
     <figure className="split" aria-label="Una cotización aceptada de S/ 30,000 se reparte entre dos talleres y la coordinación">
       <svg viewBox="0 0 360 330" role="img" aria-hidden="true">
         <defs>
-          <linearGradient id="thread" x1="0" x2="1">
+          <linearGradient id="thread" gradientUnits="userSpaceOnUse" x1="0" y1="78" x2="0" y2="190">
             <stop offset="0" stopColor="var(--brand-cochineal)" />
             <stop offset="1" stopColor="var(--brand-gold)" />
           </linearGradient>

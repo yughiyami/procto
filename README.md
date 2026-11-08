@@ -1,145 +1,170 @@
-# Izumi · Pedido Compartido
+# PROCTO
 
-Scaffold de backend para convertir una solicitud que una mype no puede atender sola en una oferta coordinada con su red. **No es todavía una aplicación lista para producción ni incluye interfaz web.**
+**Protected payments for shared orders.** PROCTO is the evolution of NEXO (formerly "Izumi · Pedido Compartido"),
+the shared-order tool for Peruvian micro and small enterprises (MSEs). It was built for the Stellar 48h hackathon
+(Scale track).
 
-## Alcance
+> The UI is in Spanish on purpose: the users are textile workshops in Arequipa and their buyers in Lima.
+> Code, comments and this README are in English.
 
-- Núcleo propio: solicitud → aportes de proveedores → oferta versionada → aceptación → cumplimiento → movimientos económicos.
-- API TypeScript/Fastify y PostgreSQL; una organización por credencial de API.
-- Integraciones aisladas para Wapi, extracción asistida con DeepSeek y preparación/consulta de operaciones compatibles con Minkaly en Sepolia.
-- Sin custodia de fondos, firma privada del servidor ni transacciones blockchain emitidas automáticamente.
-- No se copió código de Wapi, wspbot o Minkaly. Publicación de un repositorio no sustituye una licencia de reutilización.
+## The problem
 
-Los adaptadores necesitan credenciales e infraestructura externa reales. Su presencia **no significa que esas integraciones estén conectadas o probadas en vivo**. El modelo de negocio y todas sus condiciones están en [requisitos](docs/requirements.md); la configuración humana, en [configuración manual](docs/manual-setup.md).
+A coordinating MSE answers an order it cannot fulfil alone, so it combines several workshops (knitting, embroidery,
+her own production). Today the buyer pays the coordinator 30 to 60 days after delivery, and the coordinator pays the
+workshops even later. **The workshops end up financing the coordinator.**
 
-## Estructura
+## The idea
 
-Monorepo pnpm. Cada paquete se construye y verifica por separado.
+**The accepted quote is the payment instruction.**
+
+1. The buyer accepts the quote. PROCTO splits the price into one payment per workshop plus the coordinator's share.
+2. The buyer deposits the full amount into a Soroban contract. Nobody can touch it until delivery is confirmed.
+3. When the buyer confirms a delivery, that share is paid straight to the workshop's account.
+4. A workshop that needs cash earlier can sell its (already funded) claim at a small discount to an investor. The
+   investor only bears delivery risk, not the buyer's credit risk.
+
+## How Stellar is used
+
+| Piece | What it does |
+| --- | --- |
+| **Soroban contract** `contracts/shared-order` | Escrow + split + claim factoring. Non-upgradable, no admin keys. Events for every state change. See [contracts/README.md](contracts/README.md). |
+| **SAC tokens** | Settlement in the Stellar Asset Contract of Circle's testnet **USDC** or the demo asset **PUSD**. The demo flow uses PUSD because Circle's faucet is web-only. |
+| **Fee sponsorship (fee-bump)** | Users never need XLM. They sign; a serverless function wraps their signed transaction in a fee bump paid by a sponsor account. See below. |
+| **Stellar Wallets Kit** | `@creit.tech/stellar-wallets-kit` v2: Freighter, xBull, Albedo, LOBSTR, Hana, Rabet and more. |
+| **Contract events** | The "Historial en la red" timeline and the verifiable receipt read contract events through Soroban RPC. |
+| **stellar.expert** | Every step links to a public record. |
+
+### Fee sponsorship
+
+`apps/web/api/sponsor.ts` (Vercel Node.js function, Web `Request`/`Response` signature) receives a transaction that
+the user already signed and:
+
+1. rejects anything that is not exactly one operation that either invokes **our contract** (an allow-listed function)
+   or adds a **PUSD/USDC trustline**;
+2. verifies the user's signature, caps the fee, refuses a sponsor-as-source transaction, rate-limits per source account;
+3. wraps it in a fee bump signed with `SPONSOR_SECRET`, submits it through Soroban RPC and returns the hash.
+
+The sponsor never signs the inner transaction and never touches user funds. The core logic is in
+`apps/web/api/_lib/sponsor.ts` and is unit-tested. If the endpoint is unreachable the client falls back to
+user-paid fees and tells the user in plain language.
+
+`apps/web/api/faucet.ts` mints demo PUSD (testnet only) to a prepared account. It needs `ISSUER_SECRET`, refuses
+accounts that already hold 20,000 PUSD and rate-limits per address.
+
+### Currency
+
+Amounts are PEN cents in the app. The chain amounts use a **fixed demo FX rate of S/ 3.75 per 1 USD token**
+(`apps/web/src/stellar/units.ts`). It is a demonstration constant, not a market rate.
+
+## Architecture
 
 ```
-apps/api        @izumi/api        Backend Fastify + PostgreSQL
-apps/web        @izumi/web        Interfaz web responsive (Vite + React, instalable como PWA)
-packages/contracts   @izumi/contracts    Esquemas zod, tipos y máquina de estados compartidos
-packages/api-client  @izumi/api-client   Cliente HTTP tipado
-packages/ui          @izumi/ui           Componentes y tokens de diseño
+apps/web
+  src/store/     Browser local store (offline-first). Same method surface as the old HTTP client,
+                 backed by localStorage; browser port of apps/api/src/domain.ts (WebCrypto hash chain).
+  src/stellar/   Framework-free chain layer: contract calls, sponsorship client, balances, events,
+                 units, share mapping, factoring math, wallet access.
+  src/session/   Roles (Coordinadora, Comprador, Proveedor, Inversionista) and one wallet slot per role.
+  src/pages/     Landing, orders (with the "Cobro protegido" panel), provider, investor, receipt.
+  api/           Vercel functions: sponsor.ts and faucet.ts (+ _lib with the tested core).
+  scripts/       e2e-testnet.ts: end-to-end proof against Stellar testnet.
+packages/shared-order-client   Generated TypeScript bindings of the contract.
+contracts/                     Soroban contract (unchanged during the hackathon web work).
+apps/api                       Original Fastify/Postgres backend (NEXO). Not used by PROCTO's web app.
 ```
 
-El contrato que une backend e interfaz está en [contrato de frontend](docs/frontend-contract.md).
+The web app does **not** need the NEXO API: orders, suppliers and the link to the on-chain order live in the browser.
+Provider and investor views read directly from the contract, so they work from any device.
 
-## Inicio local
+## Run locally
 
-Requisitos: Node.js 22+, pnpm 11+ y Docker con Compose.
+Requirements: Node 22+, pnpm 11.
 
-```powershell
+```bash
 pnpm install
-Copy-Item .env.example .env
-# Edita .env: sustituye replace_me en POSTGRES_PASSWORD y DATABASE_URL.
-docker compose up -d
-pnpm db:migrate
-pnpm admin:create -- "Taller Demo"
-pnpm dev
+cp apps/web/.env.example apps/web/.env.local   # then fill SPONSOR_SECRET and ISSUER_SECRET
+pnpm dev:web                                    # http://localhost:5173 (also serves /api/sponsor and /api/faucet)
 ```
 
-`pnpm dev` levanta API e interfaz a la vez. La interfaz usa el puerto `5173`; la API toma `PORT` de `.env` (`3001` si no se define) y PostgreSQL local se publica en `54329`.
+Other commands:
 
-Si la API no corre en `3001`, crea `apps/web/.env` con la dirección real; sin esto la interfaz no encontrará el backend:
-
-```
-VITE_API_URL=http://localhost:3001
-```
-
-La API solo acepta peticiones del navegador desde los orígenes de `WEB_ORIGIN` (por defecto `http://localhost:5173`). Si cambias el puerto de la interfaz, actualiza esa variable o el navegador bloqueará las respuestas.
-
-Guarda la credencial generada por `admin:create` en un gestor de secretos y envíala como `Authorization: Bearer <token>`. No la pegues en conversaciones, issues o commits. El backend guarda su hash, no el token recuperable. La interfaz la conserva solo en el `sessionStorage` de esa pestaña.
-
-```powershell
-pnpm typecheck
-pnpm build
-pnpm test
+```bash
+pnpm -r typecheck
+pnpm --filter @izumi/web test        # vitest
+pnpm --filter @izumi/web build
+pnpm --filter @izumi/web e2e         # real transactions on testnet (see below)
 ```
 
-Que estos comandos existan no acredita que se hayan ejecutado en tu máquina. Revisa el resultado real de cada uno.
+### Environment variables (server side only, never `VITE_`-prefixed)
 
-Que estas instrucciones existan no acredita que Docker, las migraciones o los proveedores externos hayan sido ejecutados en tu máquina. Revisa el resultado real de cada comando.
+| Variable | Required | Purpose |
+| --- | --- | --- |
+| `SPONSOR_SECRET` | yes | Secret of a funded testnet account that pays network fees (fee bump). |
+| `ISSUER_SECRET` | for the faucet | Secret of the PUSD issuer (`GDT7NYOJ...5UCP`). |
+| `SOROBAN_RPC_URL`, `HORIZON_URL` | no | Override the public testnet endpoints. |
 
-## Límites del scaffold
+`.env.local` is gitignored. Generate a sponsor with `stellar keys generate procto-sponsor --network testnet --fund`.
 
-- Credenciales administrativas por organización e invitaciones temporales de un solo envío; faltan portales de clientes/proveedores y recuperación de cuentas para producto final. El token del enlace demuestra posesión del enlace, no identidad verificada de la persona.
-- Los compromisos describen capacidad declarada; no garantizan stock físico de terceros.
-- Los movimientos financieros son un registro operativo, no conciliación bancaria ni contabilidad tributaria.
-- La extracción IA propone información; requiere revisión antes de cualquier compromiso comercial.
-- El contrato escrow de Minkaly no es un mecanismo de anclaje documental. Preparar una transacción no implica ejecutarla ni verificar la verdad comercial.
-- Una reserva o aceptación en API no demuestra que el comprador real fue autenticado por un canal externo.
+### The demo, as a non-crypto person would use it
 
-## Seguridad antes de exponerlo
+1. Open the app and pick **Comprador**, press "Crear billetera rápida" (or connect Freighter, xBull, ...), then
+   "Preparar mi cuenta" and "Cargar saldo de prueba" in **Mi billetera**.
+2. As **Coordinadora** open the seeded order "300 chompas de alpaca para tienda en Lima" and accept the quote.
+3. In the **Cobro protegido** tab press "Usar billeteras de demostración", then (as Comprador) "Activar cobro
+   protegido" and "Depositar pago".
+4. As **Proveedor** mark the delivery and press "Pedir adelanto"; as **Inversionista** press "Comprar este adelanto".
+5. As Comprador confirm each delivery. Open the **Comprobante** and follow the stellar.expert links.
 
-No publiques PostgreSQL en Internet. Usa secretos distintos por entorno, TLS, rotación de credenciales, backups probados y restricciones de acceso. Configura los webhooks con HMAC sobre el cuerpo original y vincula explícitamente la sesión Wapi con la organización. No uses el número principal de un comercio en pruebas con un cliente no oficial.
+Quick wallets are throw-away testnet keys stored in the browser. They exist only so anyone can try the flow in a
+minute; see "Mainnet route".
 
-## Agentes, chat y cola de trabajos
+## Testnet ids and links
 
-La regla que gobierna la capa agéntica: **un agente nunca modifica un pedido.** DeepSeek propone; una persona confirma. Su única escritura hacia el negocio es la tabla `agent_proposals`, y la aprobación humana es lo que llama a las funciones de dominio, bajo clave de idempotencia. Las cinco herramientas del agente son de solo lectura. El detalle está en [arquitectura de agentes](docs/agent-architecture.md).
+- Contract: [`CC6KIYZ4BZXVG4XT33XIF7PNSHDGY65VWV6ZWSUG56JEVB6VRFENJP6T`](https://stellar.expert/explorer/testnet/contract/CC6KIYZ4BZXVG4XT33XIF7PNSHDGY65VWV6ZWSUG56JEVB6VRFENJP6T)
+- Circle USDC SAC: `CBIELTK6YBZJU5UP2WWQEUCYKLPU6AUNZ2BQ4WWFEIE3USCIHMXQDAMA`
+- Demo PUSD SAC: `CDF6OL357YMHTV55HBBPDRTRHDIXSL3XUX7PYQA7FTQQATVPSH4OXSLD` (issuer `GDT7NYOJZJFLOVQ5VMTFRWQXUY4EK7A63NSHMOYBE22DWV74CTJP5UCP`)
+- More in [deployments/testnet.json](deployments/testnet.json).
 
-Tres agentes con un trabajo cada uno: extraer datos de un mensaje, revisar un aporte propuesto y redactar la próxima consulta. Cada ejecución tiene techo de pasos, de tokens y de tiempo, y cada paso se persiste antes de la siguiente llamada al modelo, así que una caída deja un rastro auditable.
+## Built after the `kickoff` tag
 
-WhatsApp entra por el webhook firmado de Wapi y sale por una cola durable con reintentos y backoff. Un envío con resultado ambiguo (`unknown`) **no se reintenta**: reenviar podría entregar un segundo mensaje a una persona real, así que queda como tarea de reconciliación humana.
+- Soroban `shared-order` contract, deploy script, bindings (see `git log kickoff..`).
+- Web app decoupled from the API: local store, seeded Arequipa textile scenario, no login.
+- Stellar layer: Wallets Kit, contract client, fee sponsorship, faucet, account onboarding, events.
+- Screens: landing "Cómo funciona", Cobro protegido, provider (deliver, request advance), investor (buy advance),
+  verifiable receipt, role switcher.
+- Tests: units, share mapping, factoring, share state, sponsor validation, faucet eligibility, local store.
+- Removed from the demo: chat, agents, voice, directory, sales, inbox, integrations, EVM pages.
 
-El agente es opt-in por conversación (`agent_paused` arranca en `true`) y ese interruptor frena que el agente actúe, no que una persona escriba.
+## Mainnet route
 
-```powershell
-pnpm --filter @izumi/api worker
-```
+1. **Asset**: switch the settlement token to Circle's **USDC on mainnet** (the contract is token-agnostic). Drop PUSD
+   and the faucet.
+2. **Off-ramp**: workshops cash out USDC to PEN through a **SEP-24** anchor with a Peruvian bank rail. The FX rate would
+   come from a **SEP-38** quote instead of the fixed demo rate.
+3. **Auth**: **SEP-10** web authentication for the coordinator and buyer dashboards (the local store becomes
+   a synced backend).
+4. **Wallets**: replace "quick wallets" with **passkey smart wallets** so workshops sign with their phone biometrics,
+   and use sponsored reserves so new accounts need no XLM at all.
+5. **Contract**: audit the contract, add a longer TTL strategy and a dispute/arbitration path, then deploy to mainnet.
+6. **Sponsor**: run the fee-bump sponsor with a funded mainnet account, per-user quotas and monitoring.
 
-Sin `WAPI_API_KEY` la integración corre en **modo simulador**: `POST /chat/simulate/inbound` inyecta un mensaje entrante falso por el mismo camino de código que el webhook real, y los envíos se marcan `sim-` sin salir de la máquina. Sirve para probar el flujo completo sin vincular un número.
+## Honest limits
 
-### Variables de entorno adicionales
+- Testnet only. PUSD has no value; the FX rate is fixed.
+- Delivery confirmation is the buyer's decision (by design). There is no dispute resolution yet; after the deadline
+  anyone can trigger a refund of unpaid shares to the buyer.
+- An investor who buys an advance bears delivery risk: if the buyer never confirms before the deadline, the funds
+  are refunded to the buyer.
+- Orders, suppliers and quotes live in the browser's localStorage (per device). The on-chain state is shared;
+  the commercial details are not synced between devices.
+- Quick wallets keep a secret key in localStorage. That is acceptable for testnet demos only.
+- The fee-sponsor rate limit is in memory per function instance (best effort). Production needs a shared store.
+- The contract was not independently audited. Original NEXO modules (`apps/api`) are kept for history and are not
+  part of the PROCTO demo.
+- Serverless functions use `.js` relative import extensions for Node ESM; they were exercised locally through Vite
+  and the Node e2e script, not yet on a Vercel deployment.
 
-`.env.example` todavía no las incluye; agrégalas a mano a tu `.env`.
+## Deployment (not done here)
 
-```
-WEB_ORIGIN=http://localhost:5173   # orígenes del navegador permitidos, separados por coma
-WAPI_ORG_ID=                       # organización ligada al webhook firmado
-WAPI_MODE=simulator                # simulator (por defecto sin WAPI_API_KEY) mantiene todo local
-WAPI_OUTGOING_ENABLED=false        # debe ser true explícitamente para que salga un mensaje
-AGENT_MAX_STEPS=8                  # techos del agente, aplicados en código
-AGENT_MAX_TOKENS=20000
-AGENT_TIMEOUT_MS=60000
-WORKER_POLL_MS=2000
-WORKER_BATCH=5
-```
-
-## Interfaz
-
-Diecisiete vistas sobre el mismo núcleo, en español y soles: pedidos, alta de pedido, detalle/coordinación, finanzas por pedido, evidencia, dashboard financiero, conversaciones, hilo de conversación, propuestas de agente, auditoría de ejecución, blockchain, proveedores, bandeja, integraciones, invitación pública (proveedor y cliente), acceso y 404. Responsive desde 320 px e instalable como PWA; no hay aplicaciones nativas separadas.
-
-Los iconos y la marca se generan desde `packages/ui/src/brand/izumi-mark.svg` con `pnpm --filter @izumi/web icons`.
-
-La interfaz no afirma más de lo que el backend prueba: un compromiso es capacidad declarada y no stock reservado, la diferencia de caja no es utilidad, la exportación de evidencia se muestra como `not_anchored`, una integración configurada aparece como no verificada y un enlace de invitación acredita posesión del enlace, no identidad.
-
-## Siguiente entrega
-
-Comprobar un pedido real con dos proveedores y una entrega parcial antes de ampliar automatización. Pendientes conocidos: cola durable de envío, reservas globales de capacidad, exportación PDF/CSV y seguimiento de entregas por proveedor.
-
-## Superficie de API del scaffold
-
-Excepto salud, invitaciones públicas y webhook firmado, enviar `Authorization: Bearer <token>`. Las mutaciones de pedidos e invitaciones administrativas requieren además `Idempotency-Key` de 8–128 caracteres; reutilizar una clave con contenido distinto se rechaza.
-
-| Método / ruta | Operación |
-|---|---|
-| `GET /health` | Salud del proceso; no acredita conexión con proveedores externos. |
-| `GET /suppliers`, `POST /suppliers` | Lista/alta de proveedores de la organización. |
-| `GET /orders`, `POST /orders` | Lista/alta de pedidos. |
-| `GET /orders/:id` | Detalle privado del pedido. |
-| `GET /orders/:id/feasibility` | Validación inicial de viabilidad. |
-| `GET /orders/:id/finance` | Resumen económico operativo. |
-| `GET /orders/:id/evidence` | Exportación JSON del historial privado; devuelve `not_anchored`. |
-| `POST /orders/:id/contributions` | Registrar aporte de proveedor. |
-| `POST /orders/:id/quote` | Preparar oferta versionada. |
-| `POST /orders/:id/accept` | Aceptación administrativa de versión; no suplantar consentimiento externo. |
-| `POST /orders/:id/deliveries` | Registrar entrega; seguimiento individual por proveedor pendiente. |
-| `POST /orders/:id/movements` | Registrar movimiento económico manual. |
-| `POST /orders/:id/cancel` | Cancelar conforme al estado permitido. |
-| `POST /orders/:id/invitations` | Enlace de proveedor/cliente, caducidad máxima siete días. |
-| `GET /public/invitations/:token` | Datos mínimos de la solicitud u oferta, sin costos de otros proveedores. |
-| `POST /public/invitations/:token` | Un aporte o aceptación, de un solo envío y ligado a su versión. |
-
-Integraciones añadidas por el módulo de conexión: `/integrations/status`, `/webhooks/wapi`, `/inbox`, `/inbox/:id/extract`, `/drafts` y `/blockchain/prepare`. El estado configurado no equivale a prueba externa exitosa. La bandeja y los borradores no aprueban pedidos por sí solos; la preparación blockchain no firma ni emite la transacción.
+Set `SPONSOR_SECRET` and `ISSUER_SECRET` in the Vercel project, point the project root at `apps/web`
+(`vercel.json` is already there: Vite build, SPA rewrite that excludes `/api`, function duration).

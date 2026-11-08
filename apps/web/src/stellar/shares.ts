@@ -35,7 +35,7 @@ export function flattenShares(orders: ChainOrderWithId[], now = Date.now()): Fla
       amount: s.amount,
       delivered: s.delivered,
       paid: s.paid,
-      offerPrice: s.offer_price,
+      offerPrice: s.offer_price ?? undefined,
       state: shareState(s, order.status.tag),
       daysToDeadline: daysUntil(Number(order.deadline), now),
     })),

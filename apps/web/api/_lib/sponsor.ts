@@ -79,13 +79,13 @@ export function inspectInnerTransaction(
   });
   if (!signed) throw new SponsorError('Falta la firma de la persona usuaria.');
 
-  const op = tx.operations[0] as Operation;
+  const op = tx.operations[0] as unknown as { type: string; source?: string };
   if (op.source && op.source !== tx.source) {
     throw new SponsorError('La operación debe pertenecer a la cuenta de origen.');
   }
 
   if (op.type === 'invokeHostFunction') {
-    const func = (op as Operation.InvokeHostFunction).func;
+    const func = (op as unknown as Operation.InvokeHostFunction).func;
     if (func.type !== 'hostFunctionTypeInvokeContract') {
       throw new SponsorError('Solo se permiten llamadas al contrato de PROCTO.');
     }
@@ -102,7 +102,7 @@ export function inspectInnerTransaction(
   }
 
   if (op.type === 'changeTrust') {
-    const line = (op as Operation.ChangeTrust).line;
+    const line = (op as unknown as Operation.ChangeTrust).line;
     const allowed = Object.values(TOKENS).some(
       (t) => line instanceof Asset && line.getCode() === t.code && line.getIssuer() === t.issuer,
     );

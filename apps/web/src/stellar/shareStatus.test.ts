@@ -22,6 +22,9 @@ describe('shareState', () => {
   it('shows that the workshop reported the delivery', () => {
     expect(shareState({ ...base, delivered: true }, 'Funded').key).toBe('delivered');
   });
+  it('treats a null offer price (decoded Option::None) as no offer', () => {
+    expect(shareState({ ...base, offer_price: null }, 'Funded').key).toBe('escrow');
+  });
   it('shows an open advance offer', () => {
     expect(shareState({ ...base, offer_price: 96n }, 'Funded').key).toBe('offered');
   });

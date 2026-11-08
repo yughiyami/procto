@@ -111,8 +111,11 @@ export function SessionProvider({ children }: { children: ReactNode }) {
         return c;
       },
       signerOfSlot(target) {
-        const c = state.connections[target];
-        return c ? signerFor(c, target) : null;
+        const stored = state.connections[target];
+        if (stored) return signerFor(stored, target);
+        // Quick wallets created a moment ago may not be in React state yet.
+        const quick = quickWalletAddress(target);
+        return quick ? signerFor({ kind: 'quick', address: quick }, target) : null;
       },
     }),
     [state, slot, connection, connecting, saveConnection],

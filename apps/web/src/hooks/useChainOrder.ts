@@ -25,10 +25,16 @@ export function useChainEvents(chainOrderId: string | undefined, enabled = true)
 
 export function useRefreshChain() {
   const queryClient = useQueryClient();
-  return (chainOrderId: string) => {
+  const invalidate = (chainOrderId: string) => {
     void queryClient.invalidateQueries({ queryKey: chainOrderKey(chainOrderId) });
     void queryClient.invalidateQueries({ queryKey: chainEventsKey(chainOrderId) });
     void queryClient.invalidateQueries({ queryKey: ['balance'] });
     void queryClient.invalidateQueries({ queryKey: ['chain-orders'] });
+  };
+  // The RPC can lag a ledger behind a just-confirmed transaction, so refresh again.
+  return (chainOrderId: string) => {
+    invalidate(chainOrderId);
+    setTimeout(() => invalidate(chainOrderId), 4000);
+    setTimeout(() => invalidate(chainOrderId), 10_000);
   };
 }
