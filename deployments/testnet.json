@@ -1,0 +1,158 @@
+{
+  "network": "testnet",
+  "contract": {
+    "id": "CC6KIYZ4BZXVG4XT33XIF7PNSHDGY65VWV6ZWSUG56JEVB6VRFENJP6T",
+    "url": "https://stellar.expert/explorer/testnet/contract/CC6KIYZ4BZXVG4XT33XIF7PNSHDGY65VWV6ZWSUG56JEVB6VRFENJP6T",
+    "deploy_tx": {
+      "hash": "332e9dbb9ad7d275dfad35fbd08c55bedda6a5594eba2f1e9087344b0466b02a",
+      "url": "https://stellar.expert/explorer/testnet/tx/332e9dbb9ad7d275dfad35fbd08c55bedda6a5594eba2f1e9087344b0466b02a"
+    }
+  },
+  "tokens": {
+    "usdc": {
+      "asset": "USDC:GBBD47IF6LWK7P7MDEVSCWR7DPUWV3NY3DTQEVFL4NAT4AQH3ZLLFLA5",
+      "sac": "CBIELTK6YBZJU5UP2WWQEUCYKLPU6AUNZ2BQ4WWFEIE3USCIHMXQDAMA",
+      "url": "https://stellar.expert/explorer/testnet/contract/CBIELTK6YBZJU5UP2WWQEUCYKLPU6AUNZ2BQ4WWFEIE3USCIHMXQDAMA",
+      "note": "Circle testnet USDC; balance requires the Circle web faucet"
+    },
+    "pusd": {
+      "asset": "PUSD:GDT7NYOJZJFLOVQ5VMTFRWQXUY4EK7A63NSHMOYBE22DWV74CTJP5UCP",
+      "sac": "CDF6OL357YMHTV55HBBPDRTRHDIXSL3XUX7PYQA7FTQQATVPSH4OXSLD",
+      "url": "https://stellar.expert/explorer/testnet/contract/CDF6OL357YMHTV55HBBPDRTRHDIXSL3XUX7PYQA7FTQQATVPSH4OXSLD",
+      "note": "Demo fallback asset issued by procto-issuer, 7 decimals"
+    }
+  },
+  "identities": {
+    "procto-admin": "GAEYMYIWFGIREP7NRDP5FMU33OQVMICJW3NA52NVEQD6NRAFOSA4LGLS",
+    "procto-issuer": "GDT7NYOJZJFLOVQ5VMTFRWQXUY4EK7A63NSHMOYBE22DWV74CTJP5UCP",
+    "procto-buyer": "GCE6MA63TVNWEFDQEW2FVDC76UROEP4Z3PBWAFNNPABFJLDKBT2PJ7WL",
+    "procto-supplier-a": "GDGFK5BEDJIMFXNZXFJGMI6H64QJ6CLHFFLLRSZRHN6HR7E3QFJ36XBP",
+    "procto-supplier-b": "GAMGSVDXB7NYE3HCSEBHPRQNXGSNKSM4XJSW6L25YLMEAJDGCQPWQGDQ",
+    "procto-coordinator": "GCB4CX6KWLDL54NG26SOONNTQX7RII6T7GCLGMLE4Q7KM4K3LYXNNFMP",
+    "procto-investor": "GDARHOUNCGSLY2SDVZE7FQY4FYHI35PBWPB66J6GAIQHF2T7EACPKLPS"
+  },
+  "scenario": {
+    "description": "3 shares (A 500, B 300, coordinator 200 PUSD); B sold to investor at 95% (285); buyer confirms all",
+    "order_id": 2,
+    "deadline": 1794727922,
+    "token": "CDF6OL357YMHTV55HBBPDRTRHDIXSL3XUX7PYQA7FTQQATVPSH4OXSLD",
+    "txs": {
+      "create_order": {
+        "hash": "0d0a12fe8e27f12411272b707cab6aa652c32d7016ca860f2a5760b0cb4e3a54",
+        "url": "https://stellar.expert/explorer/testnet/tx/0d0a12fe8e27f12411272b707cab6aa652c32d7016ca860f2a5760b0cb4e3a54"
+      },
+      "fund": {
+        "hash": "e7b4b796a2408d537cf2314af92f86ce1dcbe003d04d5ca7355eb72ab1b36dbc",
+        "url": "https://stellar.expert/explorer/testnet/tx/e7b4b796a2408d537cf2314af92f86ce1dcbe003d04d5ca7355eb72ab1b36dbc"
+      },
+      "mark_delivered_a": {
+        "hash": "c1500fe016aea572c9a18dadba4ef904e0d17f345e711d679683788181582b00",
+        "url": "https://stellar.expert/explorer/testnet/tx/c1500fe016aea572c9a18dadba4ef904e0d17f345e711d679683788181582b00"
+      },
+      "offer_share_b": {
+        "hash": "3374bb431f671d2f198f708e0e6e36239a639a8b20f8a8e30a861444774bf3cf",
+        "url": "https://stellar.expert/explorer/testnet/tx/3374bb431f671d2f198f708e0e6e36239a639a8b20f8a8e30a861444774bf3cf"
+      },
+      "buy_share_b": {
+        "hash": "b4bd7776619c5fc189fc8f6d232c78d8234ab2e38dcafa378512b66d3537e344",
+        "url": "https://stellar.expert/explorer/testnet/tx/b4bd7776619c5fc189fc8f6d232c78d8234ab2e38dcafa378512b66d3537e344"
+      },
+      "confirm_delivery_0": {
+        "hash": "777123aad40bec530bd1d59021f1a305d18ba3ab234b8f3cde3f4a8bab43a065",
+        "url": "https://stellar.expert/explorer/testnet/tx/777123aad40bec530bd1d59021f1a305d18ba3ab234b8f3cde3f4a8bab43a065"
+      },
+      "confirm_delivery_1": {
+        "hash": "409c249e2b3eb2d58887c6e12910ad4c2d19cfc651b561d964139ea39279584c",
+        "url": "https://stellar.expert/explorer/testnet/tx/409c249e2b3eb2d58887c6e12910ad4c2d19cfc651b561d964139ea39279584c"
+      },
+      "confirm_delivery_2": {
+        "hash": "af0ffc56c1f58a21dd4365b307b105dff437208fcbca03bbe794a68850310bad",
+        "url": "https://stellar.expert/explorer/testnet/tx/af0ffc56c1f58a21dd4365b307b105dff437208fcbca03bbe794a68850310bad"
+      }
+    },
+    "final_order": {
+      "buyer": "GCE6MA63TVNWEFDQEW2FVDC76UROEP4Z3PBWAFNNPABFJLDKBT2PJ7WL",
+      "deadline": 1794727922,
+      "refunded": "0",
+      "released": "10000000000",
+      "shares": [
+        {
+          "amount": "5000000000",
+          "delivered": true,
+          "label": "Cutting and sewing",
+          "offer_price": null,
+          "owner": "GDGFK5BEDJIMFXNZXFJGMI6H64QJ6CLHFFLLRSZRHN6HR7E3QFJ36XBP",
+          "paid": true,
+          "refunded": false,
+          "supplier": "GDGFK5BEDJIMFXNZXFJGMI6H64QJ6CLHFFLLRSZRHN6HR7E3QFJ36XBP"
+        },
+        {
+          "amount": "3000000000",
+          "delivered": false,
+          "label": "Embroidery",
+          "offer_price": null,
+          "owner": "GDARHOUNCGSLY2SDVZE7FQY4FYHI35PBWPB66J6GAIQHF2T7EACPKLPS",
+          "paid": true,
+          "refunded": false,
+          "supplier": "GAMGSVDXB7NYE3HCSEBHPRQNXGSNKSM4XJSW6L25YLMEAJDGCQPWQGDQ"
+        },
+        {
+          "amount": "2000000000",
+          "delivered": false,
+          "label": "Coordination and QA",
+          "offer_price": null,
+          "owner": "GCB4CX6KWLDL54NG26SOONNTQX7RII6T7GCLGMLE4Q7KM4K3LYXNNFMP",
+          "paid": true,
+          "refunded": false,
+          "supplier": "GCB4CX6KWLDL54NG26SOONNTQX7RII6T7GCLGMLE4Q7KM4K3LYXNNFMP"
+        }
+      ],
+      "status": "Completed",
+      "token": "CDF6OL357YMHTV55HBBPDRTRHDIXSL3XUX7PYQA7FTQQATVPSH4OXSLD",
+      "total": "10000000000"
+    }
+  },
+  "previous_scenarios": [
+    {
+      "description": "3 shares (A 500, B 300, coordinator 200 PUSD); B sold to investor at 95% (285); buyer confirms all",
+      "order_id": 1,
+      "deadline": 1794727547,
+      "token": "CDF6OL357YMHTV55HBBPDRTRHDIXSL3XUX7PYQA7FTQQATVPSH4OXSLD",
+      "txs": {
+        "create_order": {
+          "hash": "233d6063e4667c1eff9fa0ec33c7849def8fa47ce7c371d31fbcc097bd6604d7",
+          "url": "https://stellar.expert/explorer/testnet/tx/233d6063e4667c1eff9fa0ec33c7849def8fa47ce7c371d31fbcc097bd6604d7"
+        },
+        "fund": {
+          "hash": "c68c966baa8a6dfdbf5a95b736ea899bfa4a4cd36b41a503d7aeb8b0e50f8e6c",
+          "url": "https://stellar.expert/explorer/testnet/tx/c68c966baa8a6dfdbf5a95b736ea899bfa4a4cd36b41a503d7aeb8b0e50f8e6c"
+        },
+        "mark_delivered_a": {
+          "hash": "73c0a77ef3bcd00ad9c588296be6d4cb4294919a36acfe7a6f580806e11002fe",
+          "url": "https://stellar.expert/explorer/testnet/tx/73c0a77ef3bcd00ad9c588296be6d4cb4294919a36acfe7a6f580806e11002fe"
+        },
+        "offer_share_b": {
+          "hash": "10ec53bd02a79b4bda1b3ad5c23dd6774a044a19abcc50fccd611a8ba3e45020",
+          "url": "https://stellar.expert/explorer/testnet/tx/10ec53bd02a79b4bda1b3ad5c23dd6774a044a19abcc50fccd611a8ba3e45020"
+        },
+        "buy_share_b": {
+          "hash": "512ce6492cb29f1bfd360449e9091f096e9f975ea98b4dba2f00ce871f397fb4",
+          "url": "https://stellar.expert/explorer/testnet/tx/512ce6492cb29f1bfd360449e9091f096e9f975ea98b4dba2f00ce871f397fb4"
+        },
+        "confirm_delivery_0": {
+          "hash": "d10e569cbe2f242cffa9f5157c40f97dae4bc0265036caf800b76fe3159c73fd",
+          "url": "https://stellar.expert/explorer/testnet/tx/d10e569cbe2f242cffa9f5157c40f97dae4bc0265036caf800b76fe3159c73fd"
+        },
+        "confirm_delivery_1": {
+          "hash": "841201bd54ef065a45fb5b99dbadea82b751be4f1664147ee8fe6086a33e267d",
+          "url": "https://stellar.expert/explorer/testnet/tx/841201bd54ef065a45fb5b99dbadea82b751be4f1664147ee8fe6086a33e267d"
+        },
+        "confirm_delivery_2": {
+          "hash": "a7c330efdae30aa055649634117e42f95f83db7da2a4eb8311f5f08e19a314d9",
+          "url": "https://stellar.expert/explorer/testnet/tx/a7c330efdae30aa055649634117e42f95f83db7da2a4eb8311f5f08e19a314d9"
+        }
+      }
+    }
+  ],
+  "generated_at": "2026-11-08T07:34:25.698Z"
+}
