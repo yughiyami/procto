@@ -16,7 +16,7 @@ import './InvitationPage.css';
  * below is rendered explicitly, there is no generic fallback here.
  */
 export default function InvitationPage() {
-  useDocumentTitle('Invitación — Izumi');
+  useDocumentTitle('Invitación · PROCTO');
   const { token } = useParams<{ token: string }>();
 
   const query = useQuery({

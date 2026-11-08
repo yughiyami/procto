@@ -1,0 +1,18 @@
+.prov-who { display: grid; gap: var(--space-1); font-size: var(--text-sm); color: var(--color-text-muted); }
+.prov-who select { min-height: 44px; border-radius: var(--radius-md); border: 1px solid var(--color-border); padding: 0 var(--space-3); background: var(--color-surface); color: var(--color-text); font: inherit; }
+.prov-list { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-4); }
+.prov-card { padding: var(--space-4); border: 1px solid var(--color-border); border-radius: var(--radius-lg); background: var(--color-surface); display: grid; gap: var(--space-3); border-left: 4px solid var(--brand-gold); }
+.prov-card__head { display: flex; justify-content: space-between; gap: var(--space-3); align-items: flex-start; }
+.prov-card__head small { display: block; color: var(--color-text-muted); }
+.prov-card__amount { margin: 0; font-family: var(--font-display); font-size: 2rem; font-weight: 800; line-height: 1; }
+.prov-card__hint { margin: 0; font-size: var(--text-sm); color: var(--color-text-muted); max-width: 60ch; }
+.prov-card__actions { display: flex; flex-wrap: wrap; gap: var(--space-3); }
+.prov-card__links { margin: 0; font-size: var(--text-sm); }
+.prov-advance { display: grid; gap: var(--space-3); padding: var(--space-4); border-radius: var(--radius-md); background: var(--color-primary-bg); }
+.prov-advance fieldset { border: 0; padding: 0; margin: 0; }
+.prov-advance legend { font-weight: 600; margin-bottom: var(--space-2); }
+.prov-advance__ratios { display: flex; gap: var(--space-2); }
+.prov-advance__ratios label { flex: 1; display: flex; align-items: center; justify-content: center; gap: var(--space-2); min-height: 48px; border: 2px solid var(--color-border); border-radius: var(--radius-md); background: var(--color-surface); cursor: pointer; font-weight: 700; }
+.prov-advance__ratios label[data-on='true'] { border-color: var(--color-primary); }
+.prov-advance__ratios input { accent-color: var(--color-primary); }
+.prov-advance__result { margin: 0; font-size: var(--text-lg); }

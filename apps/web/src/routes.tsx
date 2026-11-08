@@ -14,6 +14,9 @@ const OrderFinancePage = lazy(() => import('./pages/orders/OrderFinancePage'));
 const OrderEvidencePage = lazy(() => import('./pages/orders/OrderEvidencePage'));
 const SuppliersPage = lazy(() => import('./pages/suppliers/SuppliersPage'));
 const FinanceDashboardPage = lazy(() => import('./pages/finance/FinanceDashboardPage'));
+const ProviderPage = lazy(() => import('./pages/provider/ProviderPage'));
+const InvestorPage = lazy(() => import('./pages/investor/InvestorPage'));
+const ReceiptPage = lazy(() => import('./pages/receipt/ReceiptPage'));
 const InvitationPage = lazy(() => import('./pages/public/InvitationPage'));
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
 
@@ -38,6 +41,10 @@ export const router = createBrowserRouter([
       { path: '/orders/:id', element: withSuspense(<OrderDetailPage />) },
       { path: '/orders/:id/finanzas', element: withSuspense(<OrderFinancePage />) },
       { path: '/orders/:id/evidencia', element: withSuspense(<OrderEvidencePage />) },
+      { path: '/proveedor', element: withSuspense(<ProviderPage />) },
+      { path: '/adelantos', element: withSuspense(<InvestorPage />) },
+      { path: '/orders/:id/comprobante', element: withSuspense(<ReceiptPage />) },
+      { path: '/comprobante/:chainId', element: withSuspense(<ReceiptPage />) },
       { path: '/proveedores', element: withSuspense(<SuppliersPage />) },
       { path: '/finanzas', element: withSuspense(<FinanceDashboardPage />) },
       { path: '/', element: <Navigate to="/inicio" replace /> },

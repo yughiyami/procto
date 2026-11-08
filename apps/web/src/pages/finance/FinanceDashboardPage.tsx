@@ -269,7 +269,7 @@ function FinanceDashboardContent({ orders }: { orders: Order[] }) {
     <div className="finance__body">
       <Alert tone="warning" title="Sobre estos totales">
         {DOMAIN_WARNING} La diferencia de caja no es utilidad ni ganancia: es solo cobros menos pagos registrados en
-        Izumi. Estos totales cubren únicamente los movimientos registrados en Izumi — no hay conciliación bancaria
+        PROCTO. Estos totales cubren únicamente los movimientos registrados en PROCTO — no hay conciliación bancaria
         automática, y "verificado manualmente" significa que una persona revisó el movimiento, no que un banco lo
         confirmó.
         {truncated ? (

@@ -7,7 +7,7 @@ import './NotFoundPage.css';
  * assume an authenticated session or render navigation that needs one.
  */
 export default function NotFoundPage() {
-  useDocumentTitle('Página no encontrada — Izumi');
+  useDocumentTitle('Página no encontrada · PROCTO');
 
   return (
     <div className="not-found">

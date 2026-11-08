@@ -1,0 +1,13 @@
+.receipt { display: grid; gap: var(--space-6); max-width: 760px; }
+.receipt h2 { font-size: var(--text-xl); margin: 0 0 var(--space-3); }
+.receipt__summary dl { display: grid; gap: var(--space-3); margin: var(--space-3) 0 0; }
+.receipt__summary dl > div { display: flex; justify-content: space-between; gap: var(--space-3); border-bottom: 1px solid var(--color-border); padding-bottom: var(--space-2); }
+.receipt dt { color: var(--color-text-muted); }
+.receipt dd { margin: 0; font-weight: 700; font-family: var(--font-display); text-align: right; }
+.receipt small { color: var(--color-text-muted); font-family: var(--font-sans); font-weight: 400; }
+.receipt__shares, .receipt__txs { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-3); }
+.receipt__shares > li { display: grid; gap: var(--space-2); padding: var(--space-3) var(--space-4); border: 1px solid var(--color-border); border-radius: var(--radius-lg); background: var(--color-surface); }
+.receipt__shares > li > div { display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--space-2); align-items: center; }
+.receipt__txs > li { display: grid; gap: 2px; padding: var(--space-3); border-left: 3px solid var(--color-primary); background: var(--color-surface); border-radius: 0 var(--radius-md) var(--radius-md) 0; word-break: break-all; }
+.receipt__note { font-size: var(--text-sm); color: var(--color-text-muted); }
+@media print { .app-header, .app-nav, .izu-button { display: none !important; } }

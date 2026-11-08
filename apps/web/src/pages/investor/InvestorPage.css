@@ -1,0 +1,12 @@
+.inv-list, .inv-mine { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-4); }
+.inv-card { padding: var(--space-4); border: 1px solid var(--color-border); border-radius: var(--radius-lg); background: var(--color-surface); display: grid; gap: var(--space-3); border-left: 4px solid var(--brand-cochineal); }
+.inv-card__head { display: flex; justify-content: space-between; gap: var(--space-3); align-items: flex-start; }
+.inv-card__head small { display: block; color: var(--color-text-muted); }
+.inv-card__nums { display: grid; gap: var(--space-2); margin: 0; }
+.inv-card__nums > div { display: flex; justify-content: space-between; gap: var(--space-3); border-bottom: 1px solid var(--color-border); padding-bottom: var(--space-2); }
+.inv-card__nums dt { color: var(--color-text-muted); }
+.inv-card__nums dd { margin: 0; font-family: var(--font-display); font-weight: 700; text-align: right; }
+.inv-card__nums small { font-family: var(--font-sans); font-weight: 400; color: var(--color-text-muted); }
+.inv-card__guarantee { margin: 0; font-size: var(--text-sm); color: var(--color-text-muted); max-width: 64ch; padding: var(--space-3); background: var(--color-primary-bg); border-radius: var(--radius-md); }
+.inv-card__actions { display: flex; flex-wrap: wrap; gap: var(--space-4); align-items: center; }
+.inv-mine > li { display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--space-2); padding: var(--space-3); border-bottom: 1px solid var(--color-border); }

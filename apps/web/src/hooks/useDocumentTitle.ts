@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 
-const SUFFIX = ' · Izumi';
+const SUFFIX = ' · PROCTO';
 
 /** Sets document.title for the current page, restoring the previous title on unmount. */
 export function useDocumentTitle(title: string): void {
