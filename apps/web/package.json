@@ -10,29 +10,30 @@
     "typecheck": "tsc --noEmit",
     "icons": "node scripts/generate-icons.mjs",
     "test": "vitest run",
-    "e2e": "tsx ../../scripts/e2e-testnet.ts"
+    "e2e": "tsx scripts/e2e-testnet.ts"
   },
   "dependencies": {
+    "@creit.tech/stellar-wallets-kit": "^2.8.0",
     "@izumi/api-client": "workspace:*",
     "@izumi/contracts": "workspace:*",
     "@izumi/ui": "workspace:*",
+    "@procto/shared-order-client": "workspace:*",
+    "@stellar/stellar-sdk": "^17.4.0",
     "@tanstack/react-query": "^5",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
     "react-router-dom": "^7",
-    "@procto/shared-order-client": "workspace:*",
-    "@stellar/stellar-sdk": "^17.4.0",
-    "@creit.tech/stellar-wallets-kit": "^2.8.0"
+    "zod": "^4.5.4"
   },
   "devDependencies": {
+    "@types/node": "^24",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@vitejs/plugin-react": "^5",
     "sharp": "^0.35.4",
+    "tsx": "^4",
     "typescript": "^5.9.0",
     "vite": "^7",
-    "vitest": "^3",
-    "@types/node": "^24",
-    "tsx": "^4"
+    "vitest": "^3"
   }
 }

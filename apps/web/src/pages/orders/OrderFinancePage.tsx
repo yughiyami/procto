@@ -9,7 +9,6 @@ import { apiClient } from '../../lib/apiClient';
 import { QueryBoundary } from '../../components/QueryBoundary';
 import { useDocumentTitle } from '../../hooks/useDocumentTitle';
 import './OrderFinancePage.css';
-import FinancialDraftPanel from '../finance/FinancialDraftPanel';
 
 const KIND_LABELS: Record<MovementKind, string> = {
   customer_receipt: 'Cobro a cliente',
@@ -110,7 +109,6 @@ function OrderFinanceContent({ orderId, order, finance }: { orderId: string; ord
         {finance.warning}
       </Alert>
 
-      {['accepted', 'fulfilling', 'delivered', 'cancelled'].includes(order.status) && <FinancialDraftPanel orderId={orderId} />}
       <MovementsSection orderId={orderId} order={order} />
     </>
   );

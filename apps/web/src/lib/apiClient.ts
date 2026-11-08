@@ -1,26 +1,10 @@
-import { createIzumiClient } from '@izumi/api-client';
-import { clearToken, getToken } from '../auth/tokenStorage';
-
-const DEFAULT_API_URL = 'http://localhost:3017';
+import { LocalStore, browserStorage } from '../store/localStore';
+import { createLocalClient } from '../store/client';
 
 /**
- * Single app-wide client instance. `getToken` is read lazily on every request
- * (not captured once) so a sign-in during the session is picked up immediately.
- *
- * ASSUMPTION for @izumi/api-client: `createIzumiClient` accepts
- * `{ baseUrl, getToken, onUnauthorized }` and every generated request calls
- * `getToken()` fresh and invokes `onUnauthorized()` exactly once per 401
- * response (before throwing the ApiError). Confirm this shape with the
- * api-client author.
+ * App-wide data client. PROCTO works offline-first: orders, suppliers and the
+ * link to the on-chain payment live in the browser's LocalStore, so no server
+ * is needed. The method surface matches the former HTTP client.
  */
-export const apiClient = createIzumiClient({
-  baseUrl: import.meta.env.VITE_API_URL ?? DEFAULT_API_URL,
-  getToken,
-  onUnauthorized: () => {
-    clearToken();
-    // Hard redirect avoids depending on router context from outside React.
-    if (!['/login', '/mobile-demo'].includes(window.location.pathname)) {
-      window.location.assign('/login');
-    }
-  },
-});
+export const store = new LocalStore(browserStorage());
+export const apiClient = createLocalClient(store);
