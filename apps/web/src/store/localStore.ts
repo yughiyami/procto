@@ -84,7 +84,10 @@ export class LocalStore {
   constructor(private readonly storage: StorageLike | null) {}
 
   init(): Promise<void> {
-    this.ready ??= this.load();
+    this.ready ??= this.load().then(() => {
+      this.snapshot++;
+      this.listeners.forEach((fn) => fn());
+    });
     return this.ready;
   }
 
@@ -109,7 +112,12 @@ export class LocalStore {
     }
   }
 
+  /** Increments on every change so React can subscribe with useSyncExternalStore. */
+  snapshot = 0;
+  getSnapshot = () => this.snapshot;
+
   persist(): void {
+    this.snapshot++;
     try {
       this.storage?.setItem(STORAGE_KEY, JSON.stringify(this.state));
     } catch {
@@ -118,10 +126,12 @@ export class LocalStore {
     this.listeners.forEach((fn) => fn());
   }
 
-  subscribe(fn: () => void): () => void {
+  subscribe = (fn: () => void): (() => void) => {
     this.listeners.add(fn);
-    return () => this.listeners.delete(fn);
-  }
+    return () => {
+      this.listeners.delete(fn);
+    };
+  };
 
   async reset(): Promise<void> {
     this.state = await buildSeed();

@@ -6,17 +6,17 @@ import { ApiError } from '@izumi/api-client';
 import { ToastProvider } from '@izumi/ui';
 import '@izumi/ui/styles.css';
 import './styles/theme.css';
-import { AuthProvider } from './auth/AuthContext';
+import { SessionProvider } from './session/SessionContext';
 import { router } from './routes';
+import { store } from './lib/apiClient';
 import { registerSW } from './registerSW';
 
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 15_000,
+      staleTime: 5_000,
       refetchOnWindowFocus: false,
       retry: (failureCount, error) => {
-        // Never retry a request the domain/validation layer already rejected.
         if (error instanceof ApiError && typeof error.status === 'number' && error.status >= 400 && error.status < 500) {
           return false;
         }
@@ -27,6 +27,7 @@ const queryClient = new QueryClient({
 });
 
 registerSW();
+void store.init();
 
 const rootElement = document.getElementById('root');
 if (!rootElement) {
@@ -37,9 +38,9 @@ createRoot(rootElement).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
       <ToastProvider>
-        <AuthProvider>
+        <SessionProvider>
           <RouterProvider router={router} />
-        </AuthProvider>
+        </SessionProvider>
       </ToastProvider>
     </QueryClientProvider>
   </StrictMode>,

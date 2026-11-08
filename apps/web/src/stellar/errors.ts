@@ -32,7 +32,7 @@ function messageOf(error: unknown): string {
 export class FriendlyError extends Error {
   constructor(
     message: string,
-    readonly cause?: unknown,
+    override readonly cause?: unknown,
   ) {
     super(message);
     this.name = 'FriendlyError';

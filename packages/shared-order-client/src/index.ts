@@ -3,9 +3,9 @@ import { Address } from "@stellar/stellar-sdk";
 import {
   AssembledTransaction,
   Client as ContractClient,
-  ClientOptions as ContractClientOptions,
-  MethodOptions,
-  Result,
+  type ClientOptions as ContractClientOptions,
+  type MethodOptions,
+  type Result,
   Spec as ContractSpec,
 } from "@stellar/stellar-sdk/contract";
 import type {
@@ -197,7 +197,7 @@ export interface Client {
 
 }
 export class Client extends ContractClient {
-  static async deploy<T = Client>(
+  static override async deploy<T = Client>(
     /** Options for initializing a Client as well as for calling a method, with extras specific to deploying. */
     options: MethodOptions &
       Omit<ContractClientOptions, "contractId"> & {
@@ -211,7 +211,7 @@ export class Client extends ContractClient {
   ): Promise<AssembledTransaction<T>> {
     return ContractClient.deploy(null, options)
   }
-  constructor(public readonly options: ContractClientOptions) {
+  constructor(public override readonly options: ContractClientOptions) {
     super(
       new ContractSpec([ "AAAAAAAAAH9Mb2NrIHRoZSBmdWxsIG9yZGVyIHRvdGFsIGluIGVzY3Jvdy4gQnV5ZXIgc2lnbnMgKHdoaWNoIGFsc28gYXV0aG9yaXplcwp0aGUgdG9rZW4gdHJhbnNmZXIpLiBPbmx5IHBvc3NpYmxlIGJlZm9yZSB0aGUgZGVhZGxpbmUuAAAAAARmdW5kAAAAAQAAAAAAAAAIb3JkZXJfaWQAAAAGAAAAAQAAA+kAAAACAAAAAw==",
         "AAAAAAAAAQRBbiBpbnZlc3RvciBidXlzIHRoZSBvcGVuIG9mZmVyOiBgcHJpY2VgIG1vdmVzIGZyb20gdGhlIGludmVzdG9yIHRvIHRoZQpjdXJyZW50IG93bmVyIGFuZCB0aGUgaW52ZXN0b3IgYmVjb21lcyB0aGUgb3duZXIgb2YgdGhlIGNsYWltLiBUaGUgY2xhaW0KaXMgYmFja2VkIGJ5IGZ1bmRzIGFscmVhZHkgbG9ja2VkIGluIGVzY3Jvdywgc28gdGhlIGludmVzdG9yIGJlYXJzIG9ubHkKZGVsaXZlcnkgcmlzaywgbm90IHRoZSBidXllcidzIGNyZWRpdCByaXNrLgAAAAlidXlfc2hhcmUAAAAAAAADAAAAAAAAAAhvcmRlcl9pZAAAAAYAAAAAAAAABWluZGV4AAAAAAAABAAAAAAAAAAIaW52ZXN0b3IAAAATAAAAAQAAA+kAAAACAAAAAw==",

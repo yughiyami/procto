@@ -117,8 +117,7 @@ async function main() {
   console.log(`  contract events found for this order: ${events.length} (${events.map((e) => e.kind).join(', ')})`);
   if (final?.status.tag !== 'Completed') throw new Error('order did not complete');
   if (hashes.some(([, , s]) => !s)) throw new Error('some transactions were not sponsored');
-  console.log('
-E2E OK. Every transaction was fee-sponsored (users paid no network fee).');
+  console.log('\nE2E OK. Every transaction was fee-sponsored (users paid no network fee).');
 }
 
 main().catch((error) => {

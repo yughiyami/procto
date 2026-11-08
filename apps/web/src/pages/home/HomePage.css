@@ -25,3 +25,8 @@
  .home-stats span { font-size:.75rem; line-height:1.4; }
  .home-shortcuts { grid-template-columns:1fr; }
 }
+
+.home-callout { display: grid; gap: 2px; padding: var(--space-4); margin-bottom: var(--space-4); border-radius: var(--radius-lg); background: var(--color-primary-bg); color: var(--color-primary-text); text-decoration: none; border: 1px solid var(--color-primary); }
+.home-callout span { color: var(--color-text); }
+.home-footnote { margin-top: var(--space-6); font-size: var(--text-sm); }
+.stack-page { display: grid; gap: var(--space-4); max-width: 760px; }

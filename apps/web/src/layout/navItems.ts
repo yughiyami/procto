@@ -1,30 +1,29 @@
 import type { IconName } from '@izumi/ui';
+import type { Role } from '../session/SessionContext';
 
 export type NavItem = {
   to: string;
   label: string;
   icon: IconName;
-  /** Optional compact label for the four mobile destinations. */
+  /** Compact label for the mobile bottom bar. */
   shortLabel?: string;
+  roles: Role[];
 };
 
-/** Single source of truth for both the desktop sidebar and the mobile bottom tab bar. */
+const ALL: Role[] = ['coordinadora', 'comprador', 'proveedor', 'inversionista'];
+
+/** Single source for the sidebar and the mobile bottom bar. Items are filtered by the active role. */
 export const navItems: NavItem[] = [
-  { to: '/', label: 'Inicio', icon: 'spark' },
-  { to: '/demo', label: 'Laboratorio DEMO', icon: 'spark' },
-  { to: '/orders', label: 'Pedidos', icon: 'orders' },
-  { to: '/chat', label: 'Conversaciones', icon: 'chat', shortLabel: 'Chats' },
-  { to: '/agentes', label: 'Propuestas', icon: 'agents' },
-  { to: '/directory', label: 'Oportunidades', icon: 'suppliers' },
-  { to: '/proveedores', label: 'Proveedores', icon: 'suppliers', shortLabel: 'Prov.' },
-  { to: '/bandeja', label: 'Bandeja', icon: 'inbox' },
-  { to: '/finanzas', label: 'Caja', icon: 'finance' },
-  { to: '/blockchain', label: 'Blockchain', icon: 'blockchain', shortLabel: 'Chain' },
-  { to: '/ventas', label: 'Ventas', icon: 'finance' },
-  { to: '/voz', label: 'PACO por voz', icon: 'chat' },
-  { to: '/negocio', label: 'Mi negocio', icon: 'user' },
-  { to: '/integraciones', label: 'Integraciones', icon: 'integrations', shortLabel: 'Config' },
+  { to: '/inicio', label: 'Inicio', icon: 'spark', roles: ALL },
+  { to: '/orders', label: 'Pedidos', icon: 'orders', roles: ['coordinadora', 'comprador'] },
+  { to: '/proveedor', label: 'Mis cobros', icon: 'finance', roles: ['proveedor'] },
+  { to: '/adelantos', label: 'Adelantos', icon: 'finance', roles: ['inversionista', 'proveedor'] },
+  { to: '/proveedores', label: 'Proveedores', icon: 'suppliers', shortLabel: 'Talleres', roles: ['coordinadora'] },
+  { to: '/finanzas', label: 'Caja', icon: 'finance', roles: ['coordinadora'] },
+  { to: '/cuenta', label: 'Mi billetera', icon: 'user', shortLabel: 'Billetera', roles: ALL },
+  { to: '/como-funciona', label: 'Cómo funciona', icon: 'info', shortLabel: 'Guía', roles: ALL },
 ];
 
-/** The mobile tab bar shows only the most-used destinations; advanced destinations live under "Herramientas". */
-export const primaryNavPaths = ['/', '/directory', '/orders', '/finanzas'];
+export function navFor(role: Role): NavItem[] {
+  return navItems.filter((item) => item.roles.includes(role));
+}

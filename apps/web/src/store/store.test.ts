@@ -16,7 +16,7 @@ function memoryStorage(): StorageLike {
 const iso = (days: number) => new Date(Date.now() + days * 86_400_000).toISOString();
 
 describe('local store seed', () => {
-  it('seeds a quoted, feasible Arequipa alpaca order with named suppliers and wallets', async () => {
+  it('seeds a quoted, feasible Arequipa alpaca order with named suppliers', async () => {
     const store = new LocalStore(memoryStorage());
     await store.init();
     const client = createLocalClient(store);
@@ -28,7 +28,8 @@ describe('local store seed', () => {
     expect((await client.getFeasibility(seeded!.id)).feasible).toBe(true);
     const suppliers = await client.listSuppliers();
     expect(suppliers.map((s) => s.name)).toEqual(expect.arrayContaining(['Taller de tejido Colca', 'Taller de bordado Misti']));
-    expect(store.state.supplierWallets[suppliers[0]!.id]).toMatch(/^G[A-Z2-7]{55}$/);
+    store.setSupplierWallet(suppliers[0]!.id, 'G'.padEnd(56, 'A'));
+    expect(store.supplierWallet(suppliers[0]!.id)).toHaveLength(56);
   });
 
   it('persists to storage and reloads without reseeding', async () => {

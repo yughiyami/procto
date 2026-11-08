@@ -1,0 +1,7 @@
+.account-panel__addr { margin: 0 0 var(--space-3); color: var(--color-text-muted); font-size: var(--text-sm); }
+.account-panel__balance { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--space-2) var(--space-3); margin-bottom: var(--space-4); }
+.account-panel__amount { font-family: var(--font-display); font-size: 2.25rem; font-weight: 700; line-height: 1; }
+.account-panel__unit { color: var(--color-text-muted); }
+.account-panel__pen { font-weight: 600; color: var(--color-primary-text); }
+.account-panel__proof { font-size: var(--text-sm); }
+.account-panel .izu-alert { margin-top: var(--space-4); }

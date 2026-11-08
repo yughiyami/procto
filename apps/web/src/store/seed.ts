@@ -3,18 +3,6 @@ import { addContribution, createOrder, quoteOrder } from './domain';
 import type { StoreState } from './localStore';
 import { randomId } from './hash';
 
-/**
- * Demo wallets (testnet). These are the public addresses of the stellar-cli
- * identities used for the hackathon demo; they carry no secret.
- */
-export const DEMO_WALLETS = {
-  buyer: 'GCE6MA63TVNWEFDQEW2FVDC76UROEP4Z3PBWAFNNPABFJLDKBT2PJ7WL',
-  coordinator: 'GCB4CX6KWLDL54NG26SOONNTQX7RII6T7GCLGMLE4Q7KM4K3LYXNNFMP',
-  weaving: 'GDGFK5BEDJIMFXNZXFJGMI6H64QJ6CLHFFLLRSZRHN6HR7E3QFJ36XBP',
-  embroidery: 'GAMGSVDXB7NYE3HCSEBHPRQNXGSNKSM4XJSW6L25YLMEAJDGCQPWQGDQ',
-  investor: 'GDARHOUNCGSLY2SDVZE7FQY4FYHI35PBWPB66J6GAIQHF2T7EACPKLPS',
-} as const;
-
 const DAY = 86_400_000;
 const iso = (days: number) => new Date(Date.now() + days * DAY).toISOString();
 
@@ -76,10 +64,7 @@ export async function buildSeed(): Promise<StoreState> {
     version: 1,
     orders: [main, second],
     suppliers: [weaving, embroidery],
-    supplierWallets: {
-      [weaving.id]: DEMO_WALLETS.weaving,
-      [embroidery.id]: DEMO_WALLETS.embroidery,
-    },
+    supplierWallets: {},
     invitations: [],
     chain: {},
   };

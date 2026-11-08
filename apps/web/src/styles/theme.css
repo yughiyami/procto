@@ -271,3 +271,36 @@ body {
 .query-state--error {
   border-color: var(--color-danger, #b3261e);
 }
+
+/* ---------- PROCTO brand tokens (override @izumi/ui defaults) ----------
+ * Andean palette: ink (tinta), indigo (añil) as the action colour, cochineal red for the money thread
+ * and yarn gold for "protected". */
+:root {
+  --font-display: 'Bricolage Grotesque', var(--font-sans, system-ui), sans-serif;
+  --brand-ink: #15182b;
+  --brand-indigo: #2a3fa8;
+  --brand-cochineal: #b8123f;
+  --brand-gold: #d9a31b;
+  --brand-wool: #f4f5f8;
+  --color-bg: #f4f5f8;
+  --color-primary: #2a3fa8;
+  --color-primary-bg: #e9ecfb;
+  --color-primary-text: #1f2f86;
+  --color-text: #15182b;
+  --color-text-muted: #545a70;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --brand-wool: #12142a;
+    --color-bg: #12142a;
+    --color-surface: #1b1e38;
+    --color-surface-raised: #232744;
+    --color-border: #343959;
+    --color-primary: #5b70e6;
+    --color-primary-bg: #222a63;
+    --color-primary-text: #b7c1ff;
+    --color-text: #eef0fa;
+    --color-text-muted: #aab0c8;
+  }
+}
+h1, h2, h3, .izu-page-header__title { font-family: var(--font-display); letter-spacing: -0.01em; }
