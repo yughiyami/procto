@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { MAX_MESSAGES, answer, buildInstructions, limitCaller, parsePacoRequest, resetRateLimit } from './paco.js';
+import { MAX_MESSAGES, answer, buildInstructions, limitCaller, parsePacoRequest, resetRateLimit, summarizeHealth } from './paco.js';
 import { sanitizeContext } from '../../src/paco/guidance.js';
 
 const ctx = sanitizeContext({ role: 'comprador', pro: false, orders: [], payment: null });
@@ -37,48 +37,73 @@ describe('buildInstructions', () => {
 });
 
 describe('answer', () => {
-  it('uses the model when the gateway is available', async () => {
-    const generate = vi.fn(async () => 'Deposita el pago para que el dinero quede en garantía.');
-    const out = await answer(req(), { gatewayAvailable: true, generate });
-    expect(out).toEqual({ text: 'Deposita el pago para que el dinero quede en garantía.', source: 'paco', degraded: false });
-    expect(generate).toHaveBeenCalledOnce();
+  const ok = (text: string) => async () => text;
+  const fail = async () => {
+    throw new Error('provider down');
+  };
+
+  it('uses the first available provider and reports which one answered', async () => {
+    const meta = vi.fn(ok('Deposita el pago.'));
+    const gateway = vi.fn(ok('gateway'));
+    const out = await answer(req(), { providers: [{ id: 'meta', available: true, generate: meta }, { id: 'gateway', available: true, generate: gateway }] });
+    expect(out).toEqual({ text: 'Deposita el pago.', source: 'paco', degraded: false, provider: 'meta' });
+    expect(gateway).not.toHaveBeenCalled();
   });
 
-  it('answers from the script without calling the model when there is no gateway', async () => {
-    const generate = vi.fn(async () => 'nope');
-    const out = await answer(req('¿Cuánto cobra PROCTO?'), { gatewayAvailable: false, generate });
-    expect(out.source).toBe('guia');
-    expect(out.degraded).toBe(false);
+  it('skips providers without credentials without calling them', async () => {
+    const meta = vi.fn(ok('x'));
+    const out = await answer(req(), { providers: [{ id: 'meta', available: false, generate: meta }, { id: 'gateway', available: true, generate: ok('desde el gateway') }] });
+    expect(out.provider).toBe('gateway');
+    expect(meta).not.toHaveBeenCalled();
+  });
+
+  it('falls through to the gateway when Meta fails', async () => {
+    const out = await answer(req(), { providers: [{ id: 'meta', available: true, generate: fail }, { id: 'gateway', available: true, generate: ok('respuesta') }] });
+    expect(out).toMatchObject({ provider: 'gateway', source: 'paco', degraded: false });
+  });
+
+  it('answers from the script when no provider is configured', async () => {
+    const out = await answer(req('¿Cuánto cobra PROCTO?'), { providers: [{ id: 'meta', available: false, generate: fail }, { id: 'gateway', available: false, generate: fail }] });
+    expect(out).toMatchObject({ source: 'guia', provider: 'guia', degraded: false });
     expect(out.text).toMatch(/3%/);
-    expect(generate).not.toHaveBeenCalled();
   });
 
-  it('falls back to the script when the model fails', async () => {
-    const out = await answer(req(), {
-      gatewayAvailable: true,
-      generate: async () => {
-        throw new Error('gateway down');
-      },
-    });
-    expect(out).toMatchObject({ source: 'guia', degraded: true });
+  it('marks the script as degraded when configured providers all fail or answer empty', async () => {
+    const out = await answer(req(), { providers: [{ id: 'meta', available: true, generate: fail }, { id: 'gateway', available: true, generate: ok('   ') }] });
+    expect(out).toMatchObject({ source: 'guia', provider: 'guia', degraded: true });
     expect(out.text.length).toBeGreaterThan(10);
   });
 
-  it('falls back on an empty model answer', async () => {
-    const out = await answer(req(), { gatewayAvailable: true, generate: async () => '   ' });
-    expect(out.degraded).toBe(true);
+  it('aborts a provider that takes too long and moves on', async () => {
+    const slow = ({ signal }: { signal: AbortSignal }) =>
+      new Promise<string>((_, reject) => {
+        signal.addEventListener('abort', () => reject(new Error('aborted')));
+      });
+    const out = await answer(req(), { timeoutMs: 10, providers: [{ id: 'meta', available: true, generate: slow }, { id: 'gateway', available: true, generate: ok('listo') }] });
+    expect(out.provider).toBe('gateway');
   });
+});
 
-  it('aborts a model call that takes too long', async () => {
-    const out = await answer(req(), {
-      gatewayAvailable: true,
-      timeoutMs: 10,
-      generate: ({ signal }) =>
-        new Promise((_, reject) => {
-          signal.addEventListener('abort', () => reject(new Error('aborted')));
-        }),
-    });
-    expect(out.degraded).toBe(true);
+describe('summarizeHealth', () => {
+  it('names the first working provider', () => {
+    const h = summarizeHealth([
+      { id: 'meta', configured: true, ok: true, detail: 'muse-spark-1.3' },
+      { id: 'gateway', configured: true, ok: false, detail: 'billing' },
+    ]);
+    expect(h).toMatchObject({ available: true, provider: 'meta', reason: 'ok' });
+  });
+  it('explains why each provider is out when none works', () => {
+    const h = summarizeHealth([
+      { id: 'meta', configured: false, ok: false, detail: 'META_API_KEY no está configurada' },
+      { id: 'gateway', configured: true, ok: false, detail: 'sin crédito' },
+    ]);
+    expect(h.provider).toBe('guia');
+    expect(h.available).toBe(false);
+    expect(h.reason).toMatch(/meta: META_API_KEY/);
+    expect(h.reason).toMatch(/gateway: sin crédito/);
+  });
+  it('falls back to the gateway when Meta is not configured', () => {
+    expect(summarizeHealth([{ id: 'meta', configured: false, ok: false, detail: 'x' }, { id: 'gateway', configured: true, ok: true, detail: 'm' }]).provider).toBe('gateway');
   });
 });
 

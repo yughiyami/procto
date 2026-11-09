@@ -12,7 +12,8 @@ export const MAX_MESSAGE_CHARS = 1_500;
 
 export type PacoMessage = { role: 'user' | 'assistant'; content: string };
 export type PacoRequest = { messages: PacoMessage[]; context: PacoContext };
-export type PacoAnswer = { text: string; source: 'paco' | 'guia'; degraded: boolean };
+export type ProviderId = 'meta' | 'gateway';
+export type PacoAnswer = { text: string; source: 'paco' | 'guia'; degraded: boolean; provider: ProviderId | 'guia' };
 
 export function parsePacoRequest(body: unknown): PacoRequest {
   const o = (body && typeof body === 'object' ? body : {}) as Record<string, unknown>;
@@ -43,30 +44,53 @@ export function buildInstructions(ctx: PacoContext): string {
 
 export type GenerateFn = (input: { instructions: string; messages: PacoMessage[]; signal: AbortSignal }) => Promise<string>;
 
+/** A model provider in priority order. Unavailable ones (no key, no credentials) are skipped without a call. */
+export type Provider = { id: ProviderId; available: boolean; generate: GenerateFn };
+
 export type AnswerOptions = {
-  /** False when no gateway credentials exist: skip the model and answer from the script. */
-  gatewayAvailable: boolean;
-  generate: GenerateFn;
+  /** Tried in order; the first that returns text wins. The scripted guide answers when none does. */
+  providers: Provider[];
   timeoutMs?: number;
 };
 
 export async function answer(request: PacoRequest, options: AnswerOptions): Promise<PacoAnswer> {
   const last = request.messages[request.messages.length - 1]!.content;
-  const fallback = (degraded: boolean): PacoAnswer => ({ text: scriptedAnswer(last, request.context), source: 'guia', degraded });
-  if (!options.gatewayAvailable) return fallback(false);
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), options.timeoutMs ?? 20_000);
-  try {
-    const text = (await options.generate({ instructions: buildInstructions(request.context), messages: request.messages, signal: controller.signal })).trim();
-    return text ? { text, source: 'paco', degraded: false } : fallback(true);
-  } catch {
-    return fallback(true);
-  } finally {
-    clearTimeout(timer);
+  const live = options.providers.filter((p) => p.available);
+  for (const provider of live) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), options.timeoutMs ?? 20_000);
+    try {
+      const text = (await provider.generate({ instructions: buildInstructions(request.context), messages: request.messages, signal: controller.signal })).trim();
+      if (text) return { text, source: 'paco', degraded: false, provider: provider.id };
+    } catch {
+      // Try the next provider.
+    } finally {
+      clearTimeout(timer);
+    }
   }
+  // Degraded means a provider was configured but none of them answered.
+  return { text: scriptedAnswer(last, request.context), source: 'guia', degraded: live.length > 0, provider: 'guia' };
 }
 
 const buckets = new Map<string, number[]>();
 /** 12 questions a minute per caller: enough for a conversation, too little to burn the model budget. */
 export const limitCaller = (key: string, now = Date.now()) => checkRateLimit(buckets, key, 12, 60_000, now);
 export const resetRateLimit = () => buckets.clear();
+
+export type ProviderHealth = { id: ProviderId; configured: boolean; ok: boolean; detail: string };
+
+/** Which provider PACO would use right now, and why the others were skipped. Never contains a secret. */
+export function summarizeHealth(providers: ProviderHealth[]): {
+  available: boolean;
+  provider: ProviderId | 'guia';
+  providers: ProviderHealth[];
+  reason: string;
+} {
+  const active = providers.find((p) => p.configured && p.ok);
+  return {
+    available: Boolean(active),
+    provider: active?.id ?? 'guia',
+    providers,
+    reason: active ? 'ok' : providers.map((p) => `${p.id}: ${p.detail}`).join('; '),
+  };
+}

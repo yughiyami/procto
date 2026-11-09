@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { Alert, Badge, Card, CardBody, CardHeader, PageHeader } from '@izumi/ui';
 import { useDocumentTitle } from '../../hooks/useDocumentTitle';
-import { pacoAvailable } from '../../paco/client';
+import { pacoHealth } from '../../paco/client';
 import { explorerContract } from '../../stellar/config';
 import './IntegrationsPage.css';
 
@@ -16,8 +16,9 @@ const vapiConfigured = Boolean((import.meta.env.VITE_VAPI_PUBLIC_KEY ?? '').trim
 /** Honest status of every connection: what works today, what is a sample, and what needs credentials. */
 export default function IntegrationsPage() {
   useDocumentTitle('Integraciones');
-  const paco = useQuery({ queryKey: ['paco', 'health'], queryFn: () => pacoAvailable(), staleTime: 60_000 });
-  const pacoState: State = paco.isPending ? { label: 'Comprobando…', tone: 'neutral' } : paco.data ? ACTIVE : { label: 'Guía básica (sin conexión con el asistente)', tone: 'warning' };
+  const paco = useQuery({ queryKey: ['paco', 'health'], queryFn: () => pacoHealth(), staleTime: 60_000 });
+  const PROVIDER = { meta: 'Activo con Meta (Muse Spark)', gateway: 'Activo con Vercel AI Gateway', guia: 'Guía básica (sin conexión con el asistente)' } as const;
+  const pacoState: State = paco.isPending ? { label: 'Comprobando…', tone: 'neutral' } : paco.data?.available ? { label: PROVIDER[paco.data.provider], tone: 'success' } : { label: PROVIDER.guia, tone: 'warning' };
 
   return (
     <div className="integrations">
@@ -42,7 +43,7 @@ export default function IntegrationsPage() {
           <Card>
             <CardHeader title="PACO, el asistente" actions={<Badge tone={pacoState.tone}>{pacoState.label}</Badge>} />
             <CardBody>
-              <p>PACO responde con un modelo de lenguaje a través de Vercel AI Gateway. Si el servicio no está disponible, responde con una guía básica escrita para cada paso, así que nunca queda sin respuesta.</p>
+              <p>PACO responde con un modelo de lenguaje: primero la API de modelos de Meta (si está configurada), luego Vercel AI Gateway. Si ninguno está disponible, responde con una guía básica escrita para cada paso, así que nunca queda sin respuesta.</p>
               <Link to="/paco">Hablar con PACO</Link>
             </CardBody>
           </Card>

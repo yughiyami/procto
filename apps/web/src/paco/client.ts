@@ -25,12 +25,16 @@ export async function askPaco(messages: PacoMessage[], context: PacoContext, end
   return { text: scriptedAnswer(last, context), source: 'guia', degraded: true };
 }
 
-export async function pacoAvailable(endpoint = '/api/paco'): Promise<boolean> {
+export type PacoHealth = { available: boolean; provider: 'meta' | 'gateway' | 'guia'; reason: string };
+
+/** Which provider PACO is using right now (Meta, AI Gateway or the scripted guide) and why. */
+export async function pacoHealth(endpoint = '/api/paco'): Promise<PacoHealth> {
   try {
-    const response = await fetch(endpoint, { signal: AbortSignal.timeout(8_000) });
-    const body = (await response.json()) as { available?: boolean };
-    return response.ok && body.available === true;
+    const response = await fetch(endpoint, { signal: AbortSignal.timeout(15_000) });
+    const body = (await response.json()) as Partial<PacoHealth>;
+    if (response.ok) return { available: body.available === true, provider: body.provider ?? 'guia', reason: body.reason ?? '' };
   } catch {
-    return false;
+    // fall through
   }
+  return { available: false, provider: 'guia', reason: 'sin conexión con el servicio' };
 }
