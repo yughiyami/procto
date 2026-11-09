@@ -8,7 +8,7 @@ import react from '@vitejs/plugin-react';
  * Handlers use the Web Request/Response signature (export async function POST).
  */
 function localApi(): Plugin {
-  const routes = ['/api/sponsor', '/api/faucet'];
+  const routes = ['/api/sponsor', '/api/faucet', '/api/paco'];
   async function handle(
     load: (path: string) => Promise<Record<string, unknown>>,
     req: import('node:http').IncomingMessage,

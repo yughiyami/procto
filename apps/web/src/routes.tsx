@@ -21,7 +21,18 @@ const ReceiptPage = lazy(() => import('./pages/receipt/ReceiptPage'));
 const InvitationPage = lazy(() => import('./pages/public/InvitationPage'));
 const DemoPage = lazy(() => import('./pages/demo/DemoPage'));
 const FichaPage = lazy(() => import('./pages/ficha/FichaPage'));
-const NotFoundPage =lazy(() => import('./pages/NotFoundPage'));
+const PacoPage = lazy(() => import('./pages/paco/PacoPage'));
+const SalesPage = lazy(() => import('./pages/sales/SalesPage'));
+const VoicePage = lazy(() => import('./pages/voice/VoicePage'));
+const ProfilePage = lazy(() => import('./pages/profile/ProfilePage'));
+const InboxPage = lazy(() => import('./pages/inbox/InboxPage'));
+const IntegrationsPage = lazy(() => import('./pages/integrations/IntegrationsPage'));
+const ChatPage = lazy(() => import('./pages/chat/ChatPage'));
+const ConversationPage = lazy(() => import('./pages/chat/ConversationPage'));
+const AgentsPage = lazy(() => import('./pages/agents/AgentsPage'));
+const AgentRunPage = lazy(() => import('./pages/agents/AgentRunPage'));
+const DirectoryPage = lazy(() => import('./pages/directory/DirectoryPage'));
+const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
 
 function withSuspense(element: ReactNode) {
   return <Suspense fallback={<div className="route-loading">Cargando…</div>}>{element}</Suspense>;
@@ -59,6 +70,17 @@ export const router = createBrowserRouter([
       { path: '/comprobante/:chainId', element: withSuspense(<ReceiptPage />) },
       { path: '/proveedores', element: withSuspense(<SuppliersPage />) },
       { path: '/finanzas', element: withSuspense(<FinanceDashboardPage />) },
+      { path: '/paco', element: withSuspense(<PacoPage />) },
+      { path: '/ventas', element: withSuspense(<SalesPage />) },
+      { path: '/voz', element: withSuspense(<VoicePage />) },
+      { path: '/negocio', element: withSuspense(<ProfilePage />) },
+      { path: '/bandeja', element: withSuspense(<InboxPage />) },
+      { path: '/integraciones', element: withSuspense(<IntegrationsPage />) },
+      { path: '/chat', element: withSuspense(<ChatPage />) },
+      { path: '/chat/:id', element: withSuspense(<ConversationPage />) },
+      { path: '/agentes', element: withSuspense(<AgentsPage />) },
+      { path: '/agentes/ejecuciones/:id', element: withSuspense(<AgentRunPage />) },
+      { path: '/directory', element: withSuspense(<DirectoryPage />) },
     ],
   },
   { path: '*', errorElement: <RouteError />, element: withSuspense(<NotFoundPage />) },
