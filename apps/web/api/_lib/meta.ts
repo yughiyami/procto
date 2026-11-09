@@ -93,8 +93,12 @@ export async function metaProbe(input: { apiKey: string; fetchImpl?: typeof fetc
       const err = await toMetaError(response, input.apiKey);
       return { ok: false, reason: err.message };
     }
-    const body = (await response.json().catch(() => null)) as { data?: Array<{ id?: unknown }> } | null;
-    const models = (body?.data ?? []).map((m) => m.id).filter((id): id is string => typeof id === 'string');
+    const body: unknown = await response.json().catch(() => null);
+    // The list schema is not spelled out in the docs: accept OpenAI-style `data`, a `models` list or a bare array.
+    const list = Array.isArray(body) ? body : ((body as { data?: unknown; models?: unknown } | null)?.data ?? (body as { models?: unknown } | null)?.models);
+    const models = (Array.isArray(list) ? (list as Array<{ id?: unknown; name?: unknown }>) : [])
+      .map((m) => m?.id ?? m?.name)
+      .filter((id): id is string => typeof id === 'string');
     return { ok: true, models, modelAvailable: models.includes(input.model ?? META_MODEL) };
   } catch (error) {
     return { ok: false, reason: error instanceof Error ? `${error.name}: ${error.message}`.split(input.apiKey).join('[redacted]').slice(0, 120) : 'network error' };

@@ -88,6 +88,12 @@ describe('metaProbe', () => {
     expect(r).toEqual({ ok: true, models: ['muse-spark-1.3', 'muse-spark-1.2'], modelAvailable: true });
     expect((fetchImpl.mock.calls[0] as unknown as [string])[0]).toBe(`${META_BASE}/models`);
   });
+  it('accepts a bare array or a "models" list too (the list schema is not documented)', async () => {
+    for (const body of [[{ id: 'muse-spark-1.3' }], { models: [{ id: 'muse-spark-1.3' }] }, { data: [{ name: 'muse-spark-1.3' }] }]) {
+      const r = await metaProbe({ apiKey: KEY, fetchImpl: (async () => ok(body)) as unknown as typeof fetch });
+      expect(r).toEqual({ ok: true, models: ['muse-spark-1.3'], modelAvailable: true });
+    }
+  });
   it('explains a rejected key without leaking it', async () => {
     const fetchImpl = vi.fn(async () => ok({ error: { type: 'authentication_error', code: 'invalid_api_key', message: 'nope' } }, 401));
     const r = await metaProbe({ apiKey: KEY, fetchImpl: fetchImpl as unknown as typeof fetch });
