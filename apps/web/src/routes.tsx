@@ -20,6 +20,7 @@ const InvestorPage = lazy(() => import('./pages/investor/InvestorPage'));
 const ReceiptPage = lazy(() => import('./pages/receipt/ReceiptPage'));
 const InvitationPage = lazy(() => import('./pages/public/InvitationPage'));
 const DemoPage = lazy(() => import('./pages/demo/DemoPage'));
+const VideoPage = lazy(() => import('./pages/video/VideoPage'));
 const FichaPage = lazy(() => import('./pages/ficha/FichaPage'));
 const GremiosPage = lazy(() => import('./pages/gremios/GremiosPage'));
 const PacoPage = lazy(() => import('./pages/paco/PacoPage'));
@@ -51,6 +52,7 @@ export const router = createBrowserRouter([
       { path: '/', element: withSuspense(<LandingPage />) },
       { path: '/como-funciona', element: withSuspense(<LandingPage />) },
       { path: '/demo', element: withSuspense(<DemoPage />) },
+      { path: '/video', element: withSuspense(<VideoPage />) },
       { path: '/ficha/:address', element: withSuspense(<FichaPage />) },
     ],
   },

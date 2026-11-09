@@ -1,0 +1,193 @@
+WEBVTT
+
+1
+00:00:00.750 --> 00:00:03.908
+Rosa teje fibra de alpaca desde hace más de quince años,
+
+2
+00:00:03.908 --> 00:00:05.959
+en un taller familiar de Juliaca.
+
+3
+00:00:05.959 --> 00:00:08.793
+Su calidad iguala a la de las marcas que exportan,
+
+4
+00:00:08.793 --> 00:00:12.166
+pero vende solo por WhatsApp, ferias y recomendaciones.
+
+5
+00:00:12.816 --> 00:00:16.804
+Con un pedido grande, no pudo cumplirlo sola. Y lo dice así:
+
+6
+00:00:16.804 --> 00:00:18.894
+«No perdí ese pedido por calidad.
+
+7
+00:00:18.894 --> 00:00:21.617
+Lo perdí porque no tenía con quién completarlo,
+
+8
+00:00:21.617 --> 00:00:25.193
+ni cómo demostrarle a un comprador que sí podíamos cumplir».
+
+9
+00:00:25.843 --> 00:00:30.548
+En Arequipa, una coordinadora textil junta talleres para cumplir pedidos grandes:
+
+10
+00:00:30.548 --> 00:00:34.083
+por ejemplo, 300 chompas de alpaca para una tienda en Lima.
+
+11
+00:00:34.732 --> 00:00:37.337
+Pero la tienda le paga todo a la coordinadora,
+
+12
+00:00:37.337 --> 00:00:40.855
+y los talleres cobran semanas después, solo por confianza.
+
+13
+00:00:40.855 --> 00:00:45.448
+Los más pequeños terminan financiando a la coordinadora, sin ninguna garantía.
+
+14
+00:00:46.698 --> 00:00:50.529
+PROCTO es la capa de garantía de pago de NEXO+, sobre Stellar.
+
+15
+00:00:50.529 --> 00:00:51.797
+Su idea es simple:
+
+16
+00:00:51.797 --> 00:00:55.490
+la cotización aceptada se convierte en la instrucción de pago.
+
+17
+00:00:56.140 --> 00:00:57.876
+El comprador deposita el pago,
+
+18
+00:00:57.876 --> 00:01:01.456
+y queda en garantía dentro de un contrato inteligente Soroban.
+
+19
+00:01:01.456 --> 00:01:04.475
+El contrato lo reparte según el aporte de cada taller,
+
+20
+00:01:04.475 --> 00:01:06.451
+más la comisión de coordinación.
+
+21
+00:01:07.101 --> 00:01:11.419
+Cuando el comprador confirma cada entrega, ese taller cobra automáticamente.
+
+22
+00:01:12.669 --> 00:01:14.089
+Veamos cómo se usa:
+
+23
+00:01:14.089 --> 00:01:17.522
+sin jerga cripto, montos en soles, y tres clics.
+
+24
+00:01:17.522 --> 00:01:22.197
+Crear billetera rápida, Preparar mi cuenta, y Cargar saldo de prueba.
+
+25
+00:01:22.197 --> 00:01:24.505
+PROCTO paga las comisiones de red.
+
+26
+00:01:25.156 --> 00:01:29.619
+Se acepta la cotización, y el cobro se reparte entre los talleres según su aporte.
+
+27
+00:01:30.268 --> 00:01:34.701
+El comprador deposita el pago completo, y el dinero queda bloqueado en el contrato.
+
+28
+00:01:35.351 --> 00:01:38.219
+¿Y si un taller necesita efectivo antes?
+
+29
+00:01:38.219 --> 00:01:40.066
+Puede pedir un adelanto:
+
+30
+00:01:40.066 --> 00:01:44.336
+vender su parte, por ejemplo al 96 %, a un inversionista.
+
+31
+00:01:44.986 --> 00:01:48.316
+El inversionista no asume el riesgo de crédito del comprador,
+
+32
+00:01:48.316 --> 00:01:50.414
+porque el dinero ya está bloqueado.
+
+33
+00:01:50.414 --> 00:01:52.040
+Solo el riesgo de entrega.
+
+34
+00:01:52.690 --> 00:01:57.420
+Cuando el comprador confirma la entrega, el pago sale solo, hacia quien corresponda.
+
+35
+00:01:58.070 --> 00:02:00.437
+Y cada pago deja un comprobante verificable,
+
+36
+00:02:00.437 --> 00:02:03.338
+que cualquiera puede revisar en stellar.expert.
+
+37
+00:02:04.588 --> 00:02:05.918
+¿Por qué Stellar?
+
+38
+00:02:05.918 --> 00:02:09.364
+Soroban permite reglas de pago que se cumplen solas.
+
+39
+00:02:09.364 --> 00:02:11.903
+Una moneda estable mantiene el valor.
+
+40
+00:02:11.903 --> 00:02:14.865
+Las comisiones patrocinadas quitan fricción.
+
+41
+00:02:14.865 --> 00:02:18.432
+Y funciona con Freighter, xBull, Albedo y LOBSTR.
+
+42
+00:02:19.082 --> 00:02:24.467
+Hoy PROCTO vive en la red de pruebas de Stellar. Lo que sigue:
+
+43
+00:02:24.467 --> 00:02:29.852
+USDC en mainnet con Circle, un anchor SEP-24 para retirar en soles,
+
+44
+00:02:29.852 --> 00:02:32.844
+SEP-10 y el Stellar Community Fund.
+
+45
+00:02:33.494 --> 00:02:34.457
+En desarrollo:
+
+46
+00:02:34.457 --> 00:02:38.181
+una ficha de cumplimiento para cada taller, y un fondo de impacto.
+
+47
+00:02:39.431 --> 00:02:44.276
+Mientras otros conectan catálogos, NEXO+ conecta compromisos cumplidos.
+
+48
+00:02:44.276 --> 00:02:47.733
+Prueba PROCTO en procto-lovat.vercel.app.

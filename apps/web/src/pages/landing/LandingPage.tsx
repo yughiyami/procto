@@ -91,6 +91,9 @@ export default function LandingPage() {
             <Link to="/demo" className="btn btn--solid">
               Probar la demo
             </Link>
+            <Link to="/video" className="btn btn--line">
+              ▶ Ver video (3 min)
+            </Link>
             <a href="#pasos" className="btn btn--line">
               Ver cómo funciona
             </a>

@@ -9,6 +9,7 @@
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
     "icons": "node scripts/generate-icons.mjs",
+    "intro:media": "tsx scripts/prepare-intro-media.ts",
     "test": "vitest run",
     "e2e": "tsx scripts/e2e-testnet.ts"
   },

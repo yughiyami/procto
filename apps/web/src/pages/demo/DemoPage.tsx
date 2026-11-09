@@ -11,6 +11,10 @@ import { DEMO_STEPS, landingPath, parseDemoRole } from '../../demo/scenario';
 import type { StepId } from '../../demo/scenario';
 import { useSession } from '../../session/SessionContext';
 import { friendlyError } from '../../stellar/errors';
+import { IntroPlayer } from '../../intro/IntroPlayer';
+import type { IntroPrep } from '../../intro/IntroPlayer';
+import { shouldShowIntro } from '../../intro/introGate';
+import { isIntroSeen } from '../../intro/introStorage';
 import { markTourDone } from '../../tour/tourStorage';
 import { DemoThreads } from './DemoThreads';
 import './DemoPage.css';
@@ -45,6 +49,10 @@ export default function DemoPage() {
   const [steps, setSteps] = useState<Record<StepId, StepView>>(INITIAL);
   const [error, setError] = useState<string | null>(null);
   const [finished, setFinished] = useState(false);
+  // Where to go once the preparation is done AND the intro video is closed (preparation runs while it plays).
+  const [readyPath, setReadyPath] = useState<string | null>(null);
+  const [introOpen, setIntroOpen] = useState(() => shouldShowIntro(search, isIntroSeen()));
+  const closeIntro = useCallback(() => setIntroOpen(false), []);
   const running = useRef(false);
   // Keep the latest session helpers without re-running the effect when session state changes.
   const sessionRef = useRef(session);
@@ -73,6 +81,7 @@ export default function DemoPage() {
     running.current = true;
     setError(null);
     setFinished(false);
+    setReadyPath(null);
     setSteps(INITIAL);
     const params = new URLSearchParams(search);
     const role = parseDemoRole(search);
@@ -84,18 +93,24 @@ export default function DemoPage() {
       if (role === 'proveedor') s.setWorkshopId(result.wallets.find((w) => w.workshopId)?.workshopId ?? null);
       await queryClient.invalidateQueries();
       setFinished(true);
-      window.setTimeout(() => navigate(landingPath(result.orderId), { replace: true }), 900);
+      setReadyPath(landingPath(result.orderId));
     } catch (e) {
       setError(friendlyError(e));
     } finally {
       running.current = false;
     }
-  }, [search, onEvent, navigate, queryClient]);
+  }, [search, onEvent, queryClient]);
 
   useEffect(() => {
     void start();
     // Runs once per visit (a new location key means a deliberate restart); "Reintentar" calls start() again.
   }, [start, locationKey]);
+
+  useEffect(() => {
+    if (!readyPath || introOpen) return;
+    const timer = window.setTimeout(() => navigate(readyPath, { replace: true }), 900);
+    return () => window.clearTimeout(timer);
+  }, [readyPath, introOpen, navigate]);
 
   const activeIndex = Math.max(
     0,
@@ -106,70 +121,79 @@ export default function DemoPage() {
   const heading = error ? 'No pudimos terminar de preparar la demo' : finished ? 'Tu demo está lista' : 'Preparando tu demo…';
   const now = error ? '' : finished ? 'Abriendo el cobro protegido' : `${activeIndex + 1}/${DEMO_STEPS.length} ${activeStep.label}`;
 
+  const prep: IntroPrep = error
+    ? { state: 'error' }
+    : finished
+      ? { state: 'ready' }
+      : { state: 'working', percent: Math.round(progress * 100) };
+
   return (
-    <main className="demo">
-      <div className="demo__card">
-        <Link to="/" className="demo__brand" aria-label="PROCTO, inicio">
-          <ProctoMark size={28} />
-          <span>PROCTO</span>
-        </Link>
+    <>
+      {introOpen ? <IntroPlayer onDone={closeIntro} prep={prep} /> : null}
+      <main className="demo" inert={introOpen}>
+        <div className="demo__card">
+          <Link to="/" className="demo__brand" aria-label="PROCTO, inicio">
+            <ProctoMark size={28} />
+            <span>PROCTO</span>
+          </Link>
 
-        <DemoThreads progress={progress} failed={Boolean(error)} />
+          <DemoThreads progress={progress} failed={Boolean(error)} />
 
-        <h1 className="demo__title">{heading}</h1>
-        <p className="demo__now" role="status" aria-live="polite">
-          {now}
-        </p>
-        <div
-          className="demo__bar"
-          role="progressbar"
-          aria-label="Avance de la preparación"
-          aria-valuemin={0}
-          aria-valuemax={100}
-          aria-valuenow={Math.round(progress * 100)}
-        >
-          <span style={{ width: `${Math.round(progress * 100)}%` }} />
-        </div>
-
-        <ol className="demo__steps">
-          {DEMO_STEPS.map((step) => {
-            const view = steps[step.id];
-            return (
-              <li key={step.id} data-status={view.status}>
-                <span className="demo__glyph" aria-hidden="true" />
-                <div>
-                  <strong>
-                    {step.label}
-                    {view.status === 'active' && view.total ? ` (${view.done ?? 0}/${view.total})` : ''}
-                  </strong>
-                  <small>
-                    {view.status === 'active' && view.retry
-                      ? 'La red de pruebas tarda un poco. Reintentando…'
-                      : view.status === 'done'
-                        ? 'Listo'
-                        : step.hint}
-                  </small>
-                </div>
-              </li>
-            );
-          })}
-        </ol>
-
-        {error ? (
-          <div className="demo__error" role="alert">
-            <p>{error}</p>
-            <p>No perdiste nada: lo que ya estaba listo se reutiliza al reintentar.</p>
-            <div className="demo__actions">
-              <Button onClick={() => void start()}>Reintentar</Button>
-              <ResetDemoButton className="demo__link" />
-            </div>
-          </div>
-        ) : (
-          <p className="demo__note">
-            Es una red de pruebas: el dinero de esta demo no tiene valor real. No necesitas instalar ni comprar nada.
+          <h1 className="demo__title">{heading}</h1>
+          <p className="demo__now" role="status" aria-live="polite">
+            {now}
           </p>
-        )}
-      </div>
-    </main>
+          <div
+            className="demo__bar"
+            role="progressbar"
+            aria-label="Avance de la preparación"
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-valuenow={Math.round(progress * 100)}
+          >
+            <span style={{ width: `${Math.round(progress * 100)}%` }} />
+          </div>
+
+          <ol className="demo__steps">
+            {DEMO_STEPS.map((step) => {
+              const view = steps[step.id];
+              return (
+                <li key={step.id} data-status={view.status}>
+                  <span className="demo__glyph" aria-hidden="true" />
+                  <div>
+                    <strong>
+                      {step.label}
+                      {view.status === 'active' && view.total ? ` (${view.done ?? 0}/${view.total})` : ''}
+                    </strong>
+                    <small>
+                      {view.status === 'active' && view.retry
+                        ? 'La red de pruebas tarda un poco. Reintentando…'
+                        : view.status === 'done'
+                          ? 'Listo'
+                          : step.hint}
+                    </small>
+                  </div>
+                </li>
+              );
+            })}
+          </ol>
+
+          {error ? (
+            <div className="demo__error" role="alert">
+              <p>{error}</p>
+              <p>No perdiste nada: lo que ya estaba listo se reutiliza al reintentar.</p>
+              <div className="demo__actions">
+                <Button onClick={() => void start()}>Reintentar</Button>
+                <ResetDemoButton className="demo__link" />
+              </div>
+            </div>
+          ) : (
+            <p className="demo__note">
+              Es una red de pruebas: el dinero de esta demo no tiene valor real. No necesitas instalar ni comprar nada.
+            </p>
+          )}
+        </div>
+      </main>
+    </>
   );
 }

@@ -1,0 +1,15 @@
+.intro { position: fixed; inset: 0; z-index: 1000; display: grid; grid-template-rows: auto 1fr auto; gap: var(--space-3, 12px); padding: max(var(--space-4, 16px), env(safe-area-inset-top)) var(--space-4, 16px) max(var(--space-4, 16px), env(safe-area-inset-bottom)); background: #0c0e1d; color: #f2f3fb; }
+.intro__top { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3, 12px); }
+.intro__title { margin: 0; font-family: var(--font-display, inherit); font-weight: 800; letter-spacing: 0.02em; font-size: 1.05rem; }
+.intro__skip { min-height: 44px; padding: 0 var(--space-4, 16px); border-radius: 999px; border: 2px solid #f2f3fb; background: transparent; color: inherit; font: inherit; font-weight: 700; cursor: pointer; }
+.intro__skip:hover { background: rgba(255, 255, 255, 0.12); }
+.intro__stage { position: relative; min-height: 0; display: grid; place-items: center; }
+.intro__video { width: 100%; max-width: min(100%, calc((100vh - 170px) * 16 / 9)); max-height: 100%; aspect-ratio: 16 / 9; background: #000; border-radius: 12px; object-fit: contain; }
+.intro__play { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); display: inline-flex; align-items: center; gap: 12px; min-height: 64px; padding: 0 28px; border-radius: 999px; border: 0; background: #f6c453; color: #1b1402; font: inherit; font-size: clamp(1.05rem, 4vw, 1.35rem); font-weight: 800; cursor: pointer; box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5); transition: transform 0.15s ease; }
+.intro__play:hover { transform: translate(-50%, -50%) scale(1.04); }
+.intro__play-icon { font-size: 1.1em; }
+.intro__failed { position: absolute; inset: auto 0 12% 0; margin: 0 auto; width: fit-content; max-width: 90%; padding: 10px 16px; border-radius: 10px; background: rgba(0, 0, 0, 0.75); text-align: center; }
+.intro__prep { margin: 0; min-height: 1.4em; text-align: center; font-size: 0.95rem; color: #c9cdea; }
+.intro button:focus-visible, .intro video:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
+@media (max-width: 600px) { .intro__title { font-size: 0.95rem; } .intro__skip { padding: 0 var(--space-3, 12px); font-size: 0.9rem; } .intro__play { min-height: 56px; padding: 0 20px; } }
+@media (prefers-reduced-motion: reduce) { .intro__play { transition: none; } .intro__play:hover { transform: translate(-50%, -50%); } }

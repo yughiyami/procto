@@ -1,4 +1,4 @@
-import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { Link, NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { Icon, Modal, ProctoMark } from '@izumi/ui';
 import { ROLES, useSession } from '../session/SessionContext';
@@ -52,6 +52,9 @@ export function AppLayout() {
         <button type="button" className="help-btn" onClick={tour.start} aria-label="Cómo funciona: recorrido guiado" title="Cómo funciona">
           ?
         </button>
+        <Link to="/video" className="help-btn" aria-label="Ver video: cómo funciona PROCTO (3 min)" title="Ver video (3 min)">
+          <span aria-hidden="true">▶</span>
+        </Link>
         <NavLink to="/cuenta" className="wallet-pill" data-connected={connection ? 'yes' : 'no'}>
           <Icon name="lock" size="sm" />
           <span>{connection ? shortAddress(connection.address) : 'Conectar billetera'}</span>

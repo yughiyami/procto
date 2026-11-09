@@ -112,6 +112,25 @@ Open **https://procto-lovat.vercel.app/demo** (or `/demo?rol=comprador|proveedor
 money, accepts the quote of "300 chompas de alpaca" and activates the protected payment, with retries for testnet lag.
 It is idempotent, and "Reiniciar demo" (in Mi billetera) rebuilds the sample order while keeping the wallets.
 
+#### Intro video
+
+`/demo` opens with a full-screen explainer video (poster, big "Ver video (3 min)" button, Spanish captions, "Saltar e ir a
+la demo" always visible; Esc also skips). The demo preparation runs in the background while it plays and the app opens
+when the video ends or is skipped. It is remembered in `localStorage` (per video version), so returning visitors go
+straight in. `?intro=0` skips it, `?intro=1` forces it. `/video` plays it on demand (landing hero button and the play
+button next to "?" in the app header).
+
+To swap in a new cut (single command, then bump one constant):
+
+```bash
+pnpm --filter @izumi/web intro:media D:/proyectos/PROCTO-video/out/PROCTO-explicacion-3min-v2-web.mp4
+# then set `version: 'v2'` in apps/web/src/intro/media.ts so people who saw the old cut see the new one
+```
+
+The script (needs `ffmpeg`) writes `apps/web/public/media/procto-intro.mp4` (1280x720 H.264 CRF 26, AAC 128k,
+faststart), `procto-intro.es.vtt` (copied from `<name>.es.vtt`/`.vtt`, or converted from `<name>.es.srt`) and
+`procto-intro-poster.jpg` (from `<name>-poster.png`, else a frame at 2 s). File names live in `src/intro/media.ts`.
+
 ### The demo, step by step
 
 1. Open the app and pick **Comprador**, press "Crear billetera rápida" (or connect Freighter, xBull, ...), then
@@ -149,7 +168,7 @@ Legend: **on-chain** = enforced by the Soroban contract or read from it; **off-c
 | Directory of companies with sources, import, interest map | Directorio y RFQ | off-chain | working with sample data |
 | RFQ repository | Directorio y RFQ | off-chain | working with sample data |
 | Global directories (Trade Map, TradeAtlas) live lookup | Directorio y RFQ > Fuentes | not connected | **credentials** |
-| **PACO** assistant | PACO, `/api/paco` | serverless via Vercel AI Gateway; scripted fallback | working (falls back to a basic guide if the gateway is unavailable) |
+| **PACO** assistant | PACO, `/api/paco` | serverless: Meta Model API, else Vercel AI Gateway, else scripted guide | working (`GET /api/paco` reports the active provider) |
 | PACO by voice | PACO por voz | Vapi in the browser | **credentials** (`VITE_VAPI_PUBLIC_KEY`, assistant ids) |
 | Guided tour, one-tap demo | `/demo`, "?" | off-chain | working |
 | Gremios (guilds of workshops) and Pedido Compartido | Gremios, Pedidos (shared order with several workshops, invitations by link) | off-chain + on-chain payment | working (a guild is a local grouping with one sample guild); a guild-level shared account is not implemented |
@@ -165,11 +184,16 @@ secrets stay in stellar-cli.
 
 ### PACO
 
-`apps/web/api/paco.ts` calls the AI SDK with a plain `provider/model` string through Vercel AI Gateway. On Vercel it
-authenticates with the project's OIDC token; locally run `vercel env pull` (or set `AI_GATEWAY_API_KEY`). The request
-carries the person's role, orders and payment state (sanitized, size-capped). The endpoint is rate limited (12
-questions a minute per caller) and always answers: if the gateway is missing or fails, scripted guidance in
-`src/paco/guidance.ts` replies instead.
+`apps/web/api/paco.ts` tries providers in order and always answers:
+
+1. **Meta Model API** (OpenAI-compatible Chat Completions at `https://api.meta.ai/v1`, model `muse-spark-1.3`) when
+   `META_API_KEY` is set (`META_MODEL` overrides the model). Adapter and tests: `api/_lib/meta.ts`. The key is only sent
+   in the `Authorization` header and is never logged.
+2. **Vercel AI Gateway** through the AI SDK (OIDC token on Vercel; locally `vercel env pull` or `AI_GATEWAY_API_KEY`).
+3. Scripted guidance in `src/paco/guidance.ts`.
+
+The request carries the person's role, orders and payment state (sanitized, size-capped). The endpoint is rate limited
+(12 questions a minute per caller). `GET /api/paco` reports which provider is active.
 
 ## Testnet ids and links
 
@@ -226,4 +250,5 @@ questions a minute per caller) and always answers: if the gateway is missing or 
 
 Deployed at https://procto-lovat.vercel.app (Vercel project `procto`, `npx vercel deploy --prod` from the repo root;
 `.vercelignore` keeps contracts and the old API out). Set `SPONSOR_SECRET` and `ISSUER_SECRET` in the Vercel project;
-PACO uses the project's OIDC token automatically.
+add `META_API_KEY` (sensitive) to use the Meta Model API for PACO, otherwise it uses the AI Gateway via the project's OIDC
+token. The Vercel project is not connected to Git: deploy with the CLI.
