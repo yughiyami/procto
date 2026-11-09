@@ -21,7 +21,7 @@
     "@stellar/stellar-sdk": "^17.4.0",
     "@tanstack/react-query": "^5",
     "@vapi-ai/web": "2.7.0",
-    "ai": "^7.0.166",
+    "ai": "7.0.164",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
     "react-router-dom": "^7",
