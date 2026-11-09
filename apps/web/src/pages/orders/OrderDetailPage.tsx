@@ -18,6 +18,9 @@ import { InvitationsPanel } from './detail/InvitationsPanel';
 import { DangerZone } from './detail/DangerZone';
 import './OrderDetailPage.css';
 
+const SECTIONS = ['payment', 'coordinate', 'delivery', 'cash', 'advanced'] as const;
+const sectionFromParam = (value: string | null) => SECTIONS.find((s) => s === value) ?? null;
+
 /**
  * /orders/:id — the coordination screen. Its job is to make the blocking reason as visible
  * as the "ready to quote" state (see FeasibilityPanel). Data fetching, mutation-driven
@@ -27,7 +30,7 @@ export default function OrderDetailPage() {
   const { id } = useParams<{ id: string }>();
   const queryClient = useQueryClient();
   const [params] = useSearchParams();
-  const [section, setSection] = useState<'payment' | 'coordinate' | 'delivery' | 'cash' | 'advanced' | null>(params.get('seccion') === 'cash' ? 'cash' : null);
+  const [section, setSection] = useState<'payment' | 'coordinate' | 'delivery' | 'cash' | 'advanced' | null>(sectionFromParam(params.get('seccion')));
 
   const orderQuery = useQuery({
     queryKey: id ? queryKeys.orders.detail(id) : queryKeys.orders.all,

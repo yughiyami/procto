@@ -1,7 +1,6 @@
 import type { Order, Supplier } from '@izumi/contracts';
 import { addContribution, createOrder, quoteOrder } from './domain';
 import type { StoreState } from './localStore';
-import { randomId } from './hash';
 
 const DAY = 86_400_000;
 const iso = (days: number) => new Date(Date.now() + days * DAY).toISOString();
@@ -15,8 +14,9 @@ const SPEC = 'Chompa de alpaca baby, cuello redondo, tallas S-M-L, color natural
  * "accept the quote -> protected payment".
  */
 export async function buildSeed(): Promise<StoreState> {
-  const weaving: Supplier = { id: randomId(), name: 'Taller de tejido Colca' };
-  const embroidery: Supplier = { id: randomId(), name: 'Taller de bordado Misti' };
+  // Stable ids keep each workshop's quick-wallet slot (proveedor:<id>) across demo resets.
+  const weaving: Supplier = { id: '7c1e5b0a-3f4d-4a6e-9a11-0c0a1b2c3d01', name: 'Taller de tejido Colca' };
+  const embroidery: Supplier = { id: '7c1e5b0a-3f4d-4a6e-9a11-0c0a1b2c3d02', name: 'Taller de bordado Misti' };
 
   const main = await createOrder(
     {
