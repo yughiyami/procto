@@ -38,3 +38,4 @@
 .role-hint__text { flex: 1; min-width: 220px; display: grid; gap: 2px; }
 .role-hint__text strong { font-family: var(--font-display, inherit); }
 .role-hint__text span { font-size: var(--text-sm, 0.875rem); color: var(--color-text-muted, #5b6070); }
+.role-hint__paco { font-size: var(--text-sm); min-height: 44px; display: inline-flex; align-items: center; }

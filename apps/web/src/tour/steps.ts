@@ -47,4 +47,16 @@ export const TOUR_STEPS: readonly TourStep[] = [
     body: 'Puedes compartirlo con tu banco, tu cliente o tu contador. Cualquiera puede comprobar que el pago ocurrió, sin pedirte permiso.',
     targets: [t('receipt'), t('payment-panel')],
   },
+  {
+    id: 'ficha',
+    title: 'Cada cobro construye tu ficha de cumplimiento',
+    body: 'Los talleres que cobran y cumplen ganan una insignia (Bronce, Plata, Oro) con su historial real. No se compra: sale de los pagos. Tu ficha tiene un enlace público para mostrársela a nuevos clientes.',
+    targets: [t('payment-panel')],
+  },
+  {
+    id: 'paco',
+    title: 'PACO te acompaña en cada paso',
+    body: 'Si dudas qué sigue, pregúntale a PACO. Conoce tu rol, tu pedido y el estado del pago, y te explica el siguiente paso en palabras simples.',
+    targets: [t('nav-paco')],
+  },
 ];

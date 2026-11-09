@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { Button } from '@izumi/ui';
 import { ROLES, useSession } from '../session/SessionContext';
 import { hintTitle, nextAction } from './nextAction';
@@ -14,6 +15,9 @@ export function RoleHint({ context }: { context: PaymentContext }) {
         <strong>{hintTitle(role, action)}</strong>
         <span>{action.detail}</span>
       </div>
+      <Link to="/paco" className="role-hint__paco">
+        Preguntar a PACO
+      </Link>
       {!action.mine && actor && (
         <Button size="sm" variant="secondary" onClick={() => setRole(actor.id)}>
           Ver como {actor.label}

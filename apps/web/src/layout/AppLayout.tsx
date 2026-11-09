@@ -1,10 +1,11 @@
-import { NavLink, Outlet, useNavigate } from 'react-router-dom';
-import { Icon, ProctoMark } from '@izumi/ui';
+import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import { Icon, Modal, ProctoMark } from '@izumi/ui';
 import { ROLES, useSession } from '../session/SessionContext';
 import type { Role } from '../session/SessionContext';
 import { shortAddress } from '../stellar/config';
 import { useAutoTour, useTour } from '../tour/TourProvider';
-import { navFor } from './navItems';
+import { barItemsFor, groupedNavFor } from './navItems';
 import './AppLayout.css';
 
 /** Role switcher + wallet pill in the header; role-aware sidebar and mobile bottom bar. */
@@ -13,7 +14,11 @@ export function AppLayout() {
   const navigate = useNavigate();
   const tour = useTour();
   useAutoTour();
-  const items = navFor(role);
+  const groups = groupedNavFor(role);
+  const { bar, more } = barItemsFor(role);
+  const [moreOpen, setMoreOpen] = useState(false);
+  const { pathname } = useLocation();
+  const moreActive = more.some((i) => pathname === i.to || pathname.startsWith(i.to + '/'));
 
   function pick(next: Role) {
     setRole(next);
@@ -53,29 +58,63 @@ export function AppLayout() {
         </NavLink>
       </header>
       <nav className="app-nav app-nav--sidebar" aria-label="Navegación principal">
-        <ul>
-          {items.map((item) => (
-            <li key={item.to}>
-              <NavLink to={item.to} end={item.to === '/inicio'} className="app-nav__link">
-                <Icon name={item.icon} />
-                <span className="app-nav__label">{item.label}</span>
-              </NavLink>
-            </li>
-          ))}
-        </ul>
+        {groups.map((group) => (
+          <div key={group.id} className="app-nav__group">
+            <p className="app-nav__group-title" id={`nav-${group.id}`}>
+              {group.label}
+            </p>
+            <ul aria-labelledby={`nav-${group.id}`}>
+              {group.items.map((item) => (
+                <li key={item.to}>
+                  <NavLink to={item.to} end={item.to === '/inicio'} className="app-nav__link" data-tour={item.tour}>
+                    <Icon name={item.icon} />
+                    <span className="app-nav__label">{item.label}</span>
+                  </NavLink>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
       </nav>
       <nav className="app-nav app-nav--bar" aria-label="Navegación móvil">
-        <ul className="app-nav__bar-list" style={{ gridTemplateColumns: `repeat(${items.length}, minmax(0, 1fr))` }}>
-          {items.map((item) => (
+        <ul className="app-nav__bar-list" style={{ gridTemplateColumns: `repeat(${bar.length + (more.length ? 1 : 0)}, minmax(0, 1fr))` }}>
+          {bar.map((item) => (
             <li key={item.to}>
-              <NavLink to={item.to} end={item.to === '/inicio'} className="app-nav__link">
+              <NavLink to={item.to} end={item.to === '/inicio'} className="app-nav__link" data-tour={item.tour}>
                 <Icon name={item.icon} />
                 <span className="app-nav__label">{item.shortLabel ?? item.label}</span>
               </NavLink>
             </li>
           ))}
+          {more.length > 0 && (
+            <li>
+              <button type="button" className="app-nav__link app-nav__more" data-active={moreActive || undefined} onClick={() => setMoreOpen(true)}>
+                <Icon name="menu" />
+                <span className="app-nav__label">Más</span>
+              </button>
+            </li>
+          )}
         </ul>
       </nav>
+      <Modal open={moreOpen} onClose={() => setMoreOpen(false)} title="Todas las secciones" size="sm">
+        <nav aria-label="Todas las secciones" className="app-more">
+          {groups.map((group) => (
+            <div key={group.id} className="app-nav__group">
+              <p className="app-nav__group-title">{group.label}</p>
+              <ul>
+                {group.items.map((item) => (
+                  <li key={item.to}>
+                    <NavLink to={item.to} end={item.to === '/inicio'} className="app-nav__link app-more__link" onClick={() => setMoreOpen(false)}>
+                      <Icon name={item.icon} />
+                      <span>{item.label}</span>
+                    </NavLink>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </nav>
+      </Modal>
       <main id="main-content" className="app-main" tabIndex={-1}>
         <Outlet />
       </main>
