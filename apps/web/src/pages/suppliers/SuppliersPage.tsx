@@ -18,7 +18,7 @@ import {
   useToast,
 } from '@izumi/ui';
 import type { TableColumn } from '@izumi/ui';
-import { apiClient } from '../../lib/apiClient';
+import { apiClient, store } from '../../lib/apiClient';
 import { QueryBoundary } from '../../components/QueryBoundary';
 import { useDocumentTitle } from '../../hooks/useDocumentTitle';
 import './SuppliersPage.css';
@@ -205,6 +205,7 @@ function SupplierPerformance({ supplier, orders }: { supplier: Supplier; orders:
   const confirmed = contributions.filter(c => c.confirmed);
   const cost = confirmed.reduce((sum, c) => sum + c.quantity * c.unitCostCents, 0);
   const pending = contributions.length - confirmed.length;
+  const wallet = store.supplierWallet(supplier.id);
   return <article className="suppliers__performance-card">
     <h2>{supplier.name}</h2>
     <dl><div><dt>Pedidos no cancelados</dt><dd>{active.length}</dd></div>
@@ -214,6 +215,13 @@ function SupplierPerformance({ supplier, orders }: { supplier: Supplier; orders:
     <details><summary>Ver {related.length} pedidos relacionados</summary>
       {related.length ? <ul>{related.map(order => <li key={order.id}><Link to={`/orders/${order.id}`}>{order.title}</Link>{order.status === 'cancelled' ? ' · Cancelado' : ''}</li>)}</ul> : <p>Aún no participa en pedidos. Invítalo desde un pedido compartido.</p>}
     </details>
+    <p>
+      {wallet ? (
+        <Link to={`/ficha/${wallet}`}>Ver ficha de cumplimiento</Link>
+      ) : (
+        'Ficha de cumplimiento: aparece cuando el taller cobra su primer pedido protegido.'
+      )}
+    </p>
     <Link to="/orders">Coordinar un pedido</Link>
   </article>;
 }

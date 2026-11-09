@@ -20,7 +20,8 @@ const InvestorPage = lazy(() => import('./pages/investor/InvestorPage'));
 const ReceiptPage = lazy(() => import('./pages/receipt/ReceiptPage'));
 const InvitationPage = lazy(() => import('./pages/public/InvitationPage'));
 const DemoPage = lazy(() => import('./pages/demo/DemoPage'));
-const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
+const FichaPage = lazy(() => import('./pages/ficha/FichaPage'));
+const NotFoundPage =lazy(() => import('./pages/NotFoundPage'));
 
 function withSuspense(element: ReactNode) {
   return <Suspense fallback={<div className="route-loading">Cargando…</div>}>{element}</Suspense>;
@@ -38,6 +39,7 @@ export const router = createBrowserRouter([
       { path: '/', element: withSuspense(<LandingPage />) },
       { path: '/como-funciona', element: withSuspense(<LandingPage />) },
       { path: '/demo', element: withSuspense(<DemoPage />) },
+      { path: '/ficha/:address', element: withSuspense(<FichaPage />) },
     ],
   },
   {

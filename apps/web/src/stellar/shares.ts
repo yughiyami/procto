@@ -15,6 +15,7 @@ export type FlatShare = {
   amount: bigint;
   delivered: boolean;
   paid: boolean;
+  refunded: boolean;
   offerPrice: bigint | undefined;
   state: ReturnType<typeof shareState>;
   daysToDeadline: number;
@@ -35,6 +36,7 @@ export function flattenShares(orders: ChainOrderWithId[], now = Date.now()): Fla
       amount: s.amount,
       delivered: s.delivered,
       paid: s.paid,
+      refunded: s.refunded,
       offerPrice: s.offer_price ?? undefined,
       state: shareState(s, order.status.tag),
       daysToDeadline: daysUntil(Number(order.deadline), now),
