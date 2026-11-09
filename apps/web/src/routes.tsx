@@ -21,6 +21,7 @@ const ReceiptPage = lazy(() => import('./pages/receipt/ReceiptPage'));
 const InvitationPage = lazy(() => import('./pages/public/InvitationPage'));
 const DemoPage = lazy(() => import('./pages/demo/DemoPage'));
 const FichaPage = lazy(() => import('./pages/ficha/FichaPage'));
+const GremiosPage = lazy(() => import('./pages/gremios/GremiosPage'));
 const PacoPage = lazy(() => import('./pages/paco/PacoPage'));
 const SalesPage = lazy(() => import('./pages/sales/SalesPage'));
 const VoicePage = lazy(() => import('./pages/voice/VoicePage'));
@@ -70,6 +71,7 @@ export const router = createBrowserRouter([
       { path: '/comprobante/:chainId', element: withSuspense(<ReceiptPage />) },
       { path: '/proveedores', element: withSuspense(<SuppliersPage />) },
       { path: '/finanzas', element: withSuspense(<FinanceDashboardPage />) },
+      { path: '/gremios', element: withSuspense(<GremiosPage />) },
       { path: '/paco', element: withSuspense(<PacoPage />) },
       { path: '/ventas', element: withSuspense(<SalesPage />) },
       { path: '/voz', element: withSuspense(<VoicePage />) },

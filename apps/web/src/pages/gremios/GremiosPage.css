@@ -1,0 +1,11 @@
+.gremios { display: grid; gap: var(--space-4); max-width: 52rem; }
+.gremios__list { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-3); }
+.gremios__list > li { padding: var(--space-4); border: 1px solid var(--color-border); border-radius: var(--radius-lg); background: var(--color-surface); display: grid; gap: var(--space-2); }
+.gremios__head { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3); }
+.gremios__head h2 { margin: 0; font-family: var(--font-display); font-size: var(--text-xl); flex: 1; }
+.gremios__members { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+.gremios__form { display: grid; gap: var(--space-3); padding: var(--space-4); border: 1px solid var(--color-border); border-radius: var(--radius-lg); }
+.gremios__form h2 { margin: 0; font-family: var(--font-display); }
+.gremios__form fieldset { border: 0; padding: 0; margin: 0; display: grid; gap: var(--space-2); }
+.gremios__check { display: flex; align-items: center; gap: var(--space-2); min-height: 44px; }
+.gremios__check input { width: 22px; height: 22px; }

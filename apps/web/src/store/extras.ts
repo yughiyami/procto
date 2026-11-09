@@ -68,6 +68,9 @@ export type StoredConversation = {
   unread: number;
 };
 
+/** A guild: a named group of workshops that can be invited to a shared order together. */
+export type Gremio = { id: string; name: string; city: string; supplierIds: string[]; note: string; source: 'sample' | 'manual' };
+
 export type ExtrasState = {
   version: 1;
   conversations: StoredConversation[];
@@ -81,6 +84,8 @@ export type ExtrasState = {
   connections: Connection[];
   opportunities: Opportunity[];
   rfqs: Rfq[];
+  /** Absent in states saved before guilds existed. */
+  gremios?: Gremio[];
 };
 
 const KEY = 'procto.extras.v1';

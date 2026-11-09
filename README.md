@@ -152,7 +152,7 @@ Legend: **on-chain** = enforced by the Soroban contract or read from it; **off-c
 | **PACO** assistant | PACO, `/api/paco` | serverless via Vercel AI Gateway; scripted fallback | working (falls back to a basic guide if the gateway is unavailable) |
 | PACO by voice | PACO por voz | Vapi in the browser | **credentials** (`VITE_VAPI_PUBLIC_KEY`, assistant ids) |
 | Guided tour, one-tap demo | `/demo`, "?" | off-chain | working |
-| Group sharing (gremios) and Pedido Compartido | Pedidos (shared order with several workshops, invitations by link) | off-chain + on-chain payment | working; group-level accounts are not implemented |
+| Gremios (guilds of workshops) and Pedido Compartido | Gremios, Pedidos (shared order with several workshops, invitations by link) | off-chain + on-chain payment | working (a guild is a local grouping with one sample guild); a guild-level shared account is not implemented |
 
 ### Business model on-chain
 

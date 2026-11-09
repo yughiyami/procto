@@ -36,6 +36,7 @@ export const navItems: NavItem[] = [
   { to: '/bandeja', label: 'Bandeja', icon: 'inbox', group: 'operacion', roles: COORD },
 
   { to: '/proveedores', label: 'Proveedores', icon: 'suppliers', group: 'red', shortLabel: 'Talleres', roles: COORD },
+  { to: '/gremios', label: 'Gremios', icon: 'suppliers', group: 'red', roles: COORD },
   { to: '/directory', label: 'Directorio y RFQ', icon: 'external-link', group: 'red', shortLabel: 'Directorio', roles: COORD },
   { to: '/chat', label: 'Conversaciones', icon: 'chat', group: 'red', shortLabel: 'Chats', roles: COORD },
   { to: '/agentes', label: 'Propuestas', icon: 'agents', group: 'red', roles: COORD },
