@@ -11,6 +11,7 @@ import { useStore } from '../../../hooks/useStore';
 import { useSession } from '../../../session/SessionContext';
 import { confirmDelivery, fundChainOrder } from '../../../stellar/chain';
 import type { TxOutcome } from '../../../stellar/chain';
+import { TxConfirmation } from '../../../components/TxConfirmation';
 import { explorerContract, explorerTx, shortAddress } from '../../../stellar/config';
 import { PLATFORM_ACCOUNTS } from '../../../stellar/platform';
 import type { ChainTxKind } from '../../../store/localStore';
@@ -185,6 +186,7 @@ export function LivePayment({ order }: { order: Order }) {
                 <a href={explorerTx(e.hash)} target="_blank" rel="noreferrer">
                   {new Date(e.at).toLocaleString('es-PE')}
                 </a>
+                <TxConfirmation hash={e.hash} />
               </li>
             ))}
           </ol>

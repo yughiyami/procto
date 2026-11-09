@@ -10,6 +10,7 @@ import { orderPhase, shareState } from '../../stellar/shareStatus';
 import { formatToken, tokenUnitsToPenCents } from '../../stellar/units';
 import { verifyEvidence } from '../../store/domain';
 import type { ChainTx } from '../../store/localStore';
+import { TxConfirmation } from '../../components/TxConfirmation';
 import './ReceiptPage.css';
 
 type Props = {
@@ -139,6 +140,7 @@ export function ReceiptView({ chainOrderId, order, knownTxs = [] }: Props) {
                   {r.hash.slice(0, 10)}…{r.hash.slice(-6)}
                 </a>
                 {r.at && <small>{new Date(r.at).toLocaleString('es-PE')}</small>}
+                <TxConfirmation hash={r.hash} />
               </li>
             ))}
           </ol>
