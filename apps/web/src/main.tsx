@@ -9,6 +9,7 @@ import './styles/theme.css';
 import { SessionProvider } from './session/SessionContext';
 import { router } from './routes';
 import { store } from './lib/apiClient';
+import { TourProvider } from './tour/TourProvider';
 import { registerSW } from './registerSW';
 
 const queryClient = new QueryClient({
@@ -39,7 +40,9 @@ createRoot(rootElement).render(
     <QueryClientProvider client={queryClient}>
       <ToastProvider>
         <SessionProvider>
-          <RouterProvider router={router} />
+          <TourProvider>
+            <RouterProvider router={router} />
+          </TourProvider>
         </SessionProvider>
       </ToastProvider>
     </QueryClientProvider>

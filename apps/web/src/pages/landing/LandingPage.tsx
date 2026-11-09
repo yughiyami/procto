@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { ProctoMark } from '@izumi/ui';
 import { useDocumentTitle } from '../../hooks/useDocumentTitle';
+import { useTour } from '../../tour/TourProvider';
 import { explorerContract } from '../../stellar/config';
 import './LandingPage.css';
 
@@ -61,6 +62,7 @@ function SplitDiagram() {
 
 export default function LandingPage() {
   useDocumentTitle('Cobro protegido para talleres');
+  const tour = useTour();
   return (
     <div className="landing">
       <header className="landing__bar">
@@ -68,9 +70,14 @@ export default function LandingPage() {
           <ProctoMark size={28} />
           <span>PROCTO</span>
         </Link>
-        <Link to="/inicio" className="landing__enter">
-          Entrar
-        </Link>
+        <div className="landing__nav">
+          <button type="button" className="landing__enter" onClick={tour.start}>
+            Cómo funciona
+          </button>
+          <Link to="/inicio" className="landing__enter">
+            Entrar
+          </Link>
+        </div>
       </header>
 
       <section className="hero">
@@ -81,8 +88,8 @@ export default function LandingPage() {
             financian a la coordinadora. PROCTO convierte la cotización aceptada en un cobro protegido.
           </p>
           <div className="hero__cta">
-            <Link to="/inicio" className="btn btn--solid">
-              Probar la demostración
+            <Link to="/demo" className="btn btn--solid">
+              Probar la demo
             </Link>
             <a href="#pasos" className="btn btn--line">
               Ver cómo funciona
@@ -162,8 +169,8 @@ export default function LandingPage() {
           </li>
         </ul>
         <div className="hero__cta">
-          <Link to="/inicio" className="btn btn--solid">
-            Probar la demostración
+          <Link to="/demo" className="btn btn--solid">
+            Probar la demo
           </Link>
         </div>
       </section>

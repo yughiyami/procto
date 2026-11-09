@@ -3,6 +3,7 @@ import { Icon, ProctoMark } from '@izumi/ui';
 import { ROLES, useSession } from '../session/SessionContext';
 import type { Role } from '../session/SessionContext';
 import { shortAddress } from '../stellar/config';
+import { useAutoTour, useTour } from '../tour/TourProvider';
 import { navFor } from './navItems';
 import './AppLayout.css';
 
@@ -10,6 +11,8 @@ import './AppLayout.css';
 export function AppLayout() {
   const { role, setRole, connection } = useSession();
   const navigate = useNavigate();
+  const tour = useTour();
+  useAutoTour();
   const items = navFor(role);
 
   function pick(next: Role) {
@@ -27,7 +30,7 @@ export function AppLayout() {
           <ProctoMark size={26} />
           <span>PROCTO</span>
         </NavLink>
-        <div className="role-switch" role="group" aria-label="Estás usando PROCTO como">
+        <div className="role-switch" data-tour="role-switch" role="group" aria-label="Estás usando PROCTO como">
           {ROLES.map((r) => (
             <button
               key={r.id}
@@ -41,6 +44,9 @@ export function AppLayout() {
             </button>
           ))}
         </div>
+        <button type="button" className="help-btn" onClick={tour.start} aria-label="Cómo funciona: recorrido guiado" title="Cómo funciona">
+          ?
+        </button>
         <NavLink to="/cuenta" className="wallet-pill" data-connected={connection ? 'yes' : 'no'}>
           <Icon name="lock" size="sm" />
           <span>{connection ? shortAddress(connection.address) : 'Conectar billetera'}</span>

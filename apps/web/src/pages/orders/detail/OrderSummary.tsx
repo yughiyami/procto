@@ -32,7 +32,7 @@ export function OrderSummary({ order }: Props) {
     : undefined;
 
   return (
-    <Card className="order-detail__summary">
+    <Card className="order-detail__summary" data-tour="order-summary">
       <CardHeader
         title={order.title}
         actions={<Badge tone={STATUS_TONE[order.status]}>{STATUS_LABELS[order.status]}</Badge>}

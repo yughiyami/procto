@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Alert, Badge, Button } from '@izumi/ui';
 import { formatPen } from '@izumi/contracts';
@@ -15,6 +16,7 @@ import type { ChainTxKind } from '../../../store/localStore';
 import { orderPhase, shareState } from '../../../stellar/shareStatus';
 import { formatToken, tokenUnitsToPenCents } from '../../../stellar/units';
 import { EVENT_LABELS } from '../../../stellar/eventLabels';
+import { RoleHint } from '../../../tour/RoleHint';
 
 const TONE = { pending: 'neutral', escrow: 'info', delivered: 'warning', offered: 'warning', paid: 'success', refunded: 'neutral' } as const;
 
@@ -25,7 +27,9 @@ export function LivePayment({ order }: { order: Order }) {
   const { signer, role, setRole } = useSession();
   const { run, busy } = useChainAction();
   const chain = useChainOrder(link.chainOrderId);
-  const events = useChainEvents(link.chainOrderId);
+  // The event scan is slow on the public RPC, so it only runs once the timeline is opened.
+  const [timelineOpen, setTimelineOpen] = useState(false);
+  const events = useChainEvents(link.chainOrderId, timelineOpen);
   const refresh = useRefreshChain();
   const balances = useBalances();
 
@@ -69,6 +73,14 @@ export function LivePayment({ order }: { order: Order }) {
 
   return (
     <div className="pp-live">
+      <RoleHint
+        context={{
+          phase: status,
+          deliveredUnpaid: chainOrder.shares.filter((x) => !x.paid && !x.refunded && x.delivered).length,
+          waitingDelivery: chainOrder.shares.filter((x) => !x.paid && !x.refunded && !x.delivered && x.offer_price == null).length,
+          offered: chainOrder.shares.filter((x) => !x.paid && x.offer_price != null).length,
+        }}
+      />
       <div className="pp-live__head">
         <Badge tone={phase.tone}>{phase.label}</Badge>
         <span>
@@ -77,7 +89,7 @@ export function LivePayment({ order }: { order: Order }) {
       </div>
 
       {status === 'Created' && (
-        <div className="pp-step">
+        <div className="pp-step" data-tour="deposit">
           <h4>Depositar pago</h4>
           <p>El comprador deposita el total. Nadie puede tocar ese dinero hasta que se confirme cada entrega.</p>
           {!isBuyer ? (
@@ -104,7 +116,7 @@ export function LivePayment({ order }: { order: Order }) {
         </div>
       )}
 
-      <ul className="pp-shares">
+      <ul className="pp-shares" data-tour="shares">
         {chainOrder.shares.map((share, i) => {
           const st = shareState(share, status);
           const meta = link.shares[i];
@@ -143,7 +155,7 @@ export function LivePayment({ order }: { order: Order }) {
 
       {status === 'Funded' && !isBuyer && <p className="pp-note">Solo el comprador ({shortAddress(link.buyer)}) confirma las entregas.</p>}
 
-      <p className="pp-links">
+      <p className="pp-links" data-tour="receipt">
         <Link to={`/orders/${order.id}/comprobante`}>Ver comprobante verificable</Link>
         {' · '}
         <a href={explorerContract()} target="_blank" rel="noreferrer">
@@ -151,7 +163,7 @@ export function LivePayment({ order }: { order: Order }) {
         </a>
       </p>
 
-      <details className="pp-timeline">
+      <details className="pp-timeline" onToggle={(e) => setTimelineOpen(e.currentTarget.open)}>
         <summary>Historial en la red</summary>
         {events.isPending ? (
           <p>Cargando…</p>
