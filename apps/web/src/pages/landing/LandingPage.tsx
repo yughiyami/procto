@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { IzumiMark } from '@izumi/ui';
+import { ProctoMark } from '@izumi/ui';
 import { useDocumentTitle } from '../../hooks/useDocumentTitle';
 import { explorerContract } from '../../stellar/config';
 import './LandingPage.css';
@@ -65,7 +65,7 @@ export default function LandingPage() {
     <div className="landing">
       <header className="landing__bar">
         <Link to="/" className="landing__brand" aria-label="PROCTO, inicio">
-          <IzumiMark size={28} />
+          <ProctoMark size={28} />
           <span>PROCTO</span>
         </Link>
         <Link to="/inicio" className="landing__enter">

@@ -3,8 +3,8 @@ export { cx } from './cx';
 export { Icon, isIconName } from './Icon';
 export type { IconName, IconProps } from './Icon';
 
-export { IzumiMark } from './brand/IzumiMark';
-export type { IzumiMarkProps } from './brand/IzumiMark';
+export { ProctoMark } from './brand/ProctoMark';
+export type { ProctoMarkProps } from './brand/ProctoMark';
 
 export { Button } from './Button';
 export type { ButtonProps } from './Button';

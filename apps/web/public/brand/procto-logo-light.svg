@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 340 80" width="340" height="80" role="img" aria-label="PROCTO">
+  <title>PROCTO</title>
+  <g transform="translate(4 4)">
+    <rect width="72" height="72" rx="16" fill="#15182b"/>
+    <g transform="translate(5 5) scale(1.9375)">
+  <path d="M16 2 L27.5 5.8 V15.2 C27.5 22 22.8 27.2 16 30 C9.2 27.2 4.5 22 4.5 15.2 V5.8 Z" fill="#ffffff" stroke="#ffffff" stroke-width="1.4" stroke-linejoin="round"/>
+  <g fill="none" stroke="#2a3fa8" stroke-width="2.4" stroke-linecap="round">
+    <path d="M8.4 8.2 C11.6 10.6 16 11.4 16 16.8"/>
+    <path d="M23.6 8.2 C20.4 10.6 16 11.4 16 16.8"/>
+    <path d="M16 7.5 V16.8"/>
+    <path d="M16 16.8 V24.5"/>
+  </g>
+  <circle cx="16" cy="16.8" r="3.3" fill="#d9a31b"/>
+</g>
+  </g>
+  <g transform="translate(99 20)"><g fill="none" stroke="#ffffff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"><path transform="translate(0 0)" d="M0 40V0H11A10.5 10.5 0 0 1 11 21H0"/><path transform="translate(36 0)" d="M0 40V0H11A10.5 10.5 0 0 1 11 21H0M11 21L23 40"/><path transform="translate(76 0)" d="M14 0A14 20 0 1 0 14 40A14 20 0 1 0 14 0Z"/><path transform="translate(118 0)" d="M24.7 7.1A14 20 0 1 0 24.7 32.9"/><path transform="translate(156 0)" d="M0 0H26M13 0V40"/><path transform="translate(196 0)" d="M14 0A14 20 0 1 0 14 40A14 20 0 1 0 14 0Z"/></g></g>
+</svg>

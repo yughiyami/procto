@@ -1,5 +1,5 @@
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
-import { Icon, IzumiMark } from '@izumi/ui';
+import { Icon, ProctoMark } from '@izumi/ui';
 import { ROLES, useSession } from '../session/SessionContext';
 import type { Role } from '../session/SessionContext';
 import { shortAddress } from '../stellar/config';
@@ -24,7 +24,7 @@ export function AppLayout() {
       </a>
       <header className="app-header">
         <NavLink to="/" className="app-header__brand" aria-label="PROCTO, inicio">
-          <IzumiMark size={26} />
+          <ProctoMark size={26} />
           <span>PROCTO</span>
         </NavLink>
         <div className="role-switch" role="group" aria-label="Estás usando PROCTO como">
