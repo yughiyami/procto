@@ -41,7 +41,7 @@ export async function POST(request: Request): Promise<Response> {
   }
 }
 
-let probe: { at: number; ok: boolean } | null = null;
+let probe: { at: number; ok: boolean; reason?: string } | null = null;
 
 /** Health: a tiny real call, cached for five minutes per instance, so "available" means the gateway answered. */
 export async function GET(): Promise<Response> {
@@ -52,11 +52,13 @@ export async function GET(): Promise<Response> {
     try {
       const text = await generate({ instructions: 'Responde solo: ok', messages: [{ role: 'user', content: 'ok' }], signal: controller.signal });
       probe = { at: Date.now(), ok: text.trim().length > 0 };
-    } catch {
-      probe = { at: Date.now(), ok: false };
+    } catch (error) {
+      // The class and first line of the message are enough to tell a missing credit or token from an outage.
+      probe = { at: Date.now(), ok: false, reason: (error instanceof Error ? `${error.name}: ${error.message}` : 'unknown').split('
+')[0]!.slice(0, 200) };
     } finally {
       clearTimeout(timer);
     }
   }
-  return json({ available: probe.ok, model: PACO_MODEL });
+  return json({ available: probe.ok, model: PACO_MODEL, ...(probe.ok ? {} : { reason: probe.reason }) });
 }
