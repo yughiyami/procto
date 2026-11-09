@@ -60,6 +60,39 @@ describe('buildShares', () => {
   });
 });
 
+describe('buildShares with the PROCTO commission', () => {
+  it('takes the commission out of the coordinator share and adds treasury and impact shares', () => {
+    const shares = buildShares(base, suppliers, { commission: { pro: false } });
+    // price 500,000: 3% = 15,000 -> impact 1,200, treasury 13,800
+    expect(shares.map((s) => s.kind)).toEqual(['workshop', 'workshop', 'coordinator', 'platform', 'impact']);
+    expect(shares.map((s) => s.amountCents)).toEqual([240_000, 80_000, 165_000, 13_800, 1_200]);
+    expect(shares.reduce((t, s) => t + s.amountCents, 0)).toBe(500_000);
+  });
+
+  it('uses the 2% PRO rate', () => {
+    const shares = buildShares(base, suppliers, { commission: { pro: true } });
+    // 2% = 10,000 -> impact 800, treasury 9,200
+    expect(shares.map((s) => s.amountCents)).toEqual([240_000, 80_000, 170_000, 9_200, 800]);
+    expect(shares.reduce((t, s) => t + s.amountCents, 0)).toBe(500_000);
+  });
+
+  it('pins platform shares to the public PROCTO accounts', () => {
+    const shares = buildShares(base, suppliers, { commission: { pro: false } });
+    expect(shares.find((s) => s.kind === 'platform')?.address).toMatch(/^G[A-Z2-7]{55}$/);
+    expect(shares.find((s) => s.kind === 'impact')?.address).toMatch(/^G[A-Z2-7]{55}$/);
+    expect(shares.find((s) => s.kind === 'platform')?.address).not.toBe(shares.find((s) => s.kind === 'impact')?.address);
+  });
+
+  it('refuses when the commission does not fit in the coordinator margin', () => {
+    const tight = { ...base, quote: { ...base.quote!, priceCents: 322_000 } } as Order;
+    expect(() => buildShares(tight, suppliers, { commission: { pro: false } })).toThrow(/comisi/i);
+  });
+
+  it('leaves the split untouched when no commission is requested', () => {
+    expect(buildShares(base, suppliers).map((s) => s.kind)).toEqual(['workshop', 'workshop', 'coordinator']);
+  });
+});
+
 describe('suggestDeadline', () => {
   it('gives a grace period of 7 days after the due date', () => {
     const now = Date.parse('2026-11-08T00:00:00Z');

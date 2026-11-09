@@ -1,13 +1,25 @@
 import type { Order, Supplier } from '@izumi/contracts';
+import { COMMISSION_LABEL, IMPACT_LABEL, splitCommission } from './commission';
+import { PLATFORM_ACCOUNTS } from './platform';
 
 export const COORDINATOR_LABEL = 'Coordinación y producción propia';
 const DAY = 86_400;
 
+export type ShareKind = 'workshop' | 'coordinator' | 'platform' | 'impact';
+
 export type ShareDraft = {
-  /** Local supplier id, or null for the coordinator's own share. */
+  /** Local supplier id, or null for every share that is not a workshop's. */
   supplierId: string | null;
+  kind: ShareKind;
   label: string;
   amountCents: number;
+  /** Fixed account for platform shares (treasury, impact fund); workshops and the coordinator choose theirs. */
+  address?: string;
+};
+
+export type BuildSharesOptions = {
+  /** Adds the PROCTO commission (and the impact fund share) taken out of the coordinator's remainder. */
+  commission?: { pro: boolean };
 };
 
 /**
@@ -16,7 +28,7 @@ export type ShareDraft = {
  * remainder (own production, logistics, coordination and margin). Shares always
  * add up to the quote price.
  */
-export function buildShares(order: Order, suppliers: Supplier[]): ShareDraft[] {
+export function buildShares(order: Order, suppliers: Supplier[], options: BuildSharesOptions = {}): ShareDraft[] {
   if (!order.quote || !order.accepted) {
     throw new Error('El pedido debe tener una cotización aceptada para activar el cobro protegido.');
   }
@@ -29,14 +41,28 @@ export function buildShares(order: Order, suppliers: Supplier[]): ShareDraft[] {
   for (const [supplierId, amountCents] of perSupplier) {
     if (amountCents <= 0) continue;
     const name = suppliers.find((s) => s.id === supplierId)?.name ?? 'Proveedor';
-    drafts.push({ supplierId, label: name, amountCents });
+    drafts.push({ supplierId, kind: 'workshop', label: name, amountCents });
     supplierTotal += amountCents;
   }
   const remainder = order.quote.priceCents - supplierTotal;
   if (remainder <= 0) {
     throw new Error('Los costos de los proveedores superan el precio de la cotización.');
   }
-  drafts.push({ supplierId: null, label: COORDINATOR_LABEL, amountCents: remainder });
+  if (!options.commission) {
+    drafts.push({ supplierId: null, kind: 'coordinator', label: COORDINATOR_LABEL, amountCents: remainder });
+    return drafts;
+  }
+  const split = splitCommission(order.quote.priceCents, options.commission.pro);
+  if (remainder - split.commissionCents <= 0) {
+    throw new Error('La comisión de PROCTO no cabe en el margen de la coordinación. Revisa la cotización.');
+  }
+  drafts.push({ supplierId: null, kind: 'coordinator', label: COORDINATOR_LABEL, amountCents: remainder - split.commissionCents });
+  if (split.treasuryCents > 0) {
+    drafts.push({ supplierId: null, kind: 'platform', label: COMMISSION_LABEL, amountCents: split.treasuryCents, address: PLATFORM_ACCOUNTS.treasury });
+  }
+  if (split.impactCents > 0) {
+    drafts.push({ supplierId: null, kind: 'impact', label: IMPACT_LABEL, amountCents: split.impactCents, address: PLATFORM_ACCOUNTS.impact });
+  }
   return drafts;
 }
 

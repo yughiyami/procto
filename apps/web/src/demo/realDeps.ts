@@ -6,6 +6,7 @@ import { DEFAULT_TOKEN, TOKENS } from '../stellar/config';
 import { buildShares, suggestDeadline } from '../stellar/mapping';
 import { penCentsToTokenUnits } from '../stellar/units';
 import { signerFor } from '../stellar/wallet';
+import { readProfile } from '../profile/profileStore';
 import type { WalletConnection } from '../stellar/wallet';
 import { FatalDemoError } from './retry';
 import type { DemoDeps } from './runDemo';
@@ -89,9 +90,9 @@ export function createDemoDeps(register: (slot: string) => WalletConnection): De
         order = await apiClient.acceptQuote(order.id, order.quote.version);
       }
       const suppliers = await apiClient.listSuppliers();
-      const shares = buildShares(order, suppliers);
+      const shares = buildShares(order, suppliers, { commission: { pro: readProfile().pro } });
       const addresses = shares.map((share) =>
-        share.supplierId ? must(wallets, `proveedor:${share.supplierId}`).address : must(wallets, 'coordinadora').address,
+        share.address ?? (share.supplierId ? must(wallets, `proveedor:${share.supplierId}`).address : must(wallets, 'coordinadora').address),
       );
       const buyer = must(wallets, 'comprador');
       const deadline = suggestDeadline(order.dueAt);
@@ -113,6 +114,7 @@ export function createDemoDeps(register: (slot: string) => WalletConnection): De
         deadline,
         shares: shares.map((share, i) => ({
           supplierId: share.supplierId,
+          kind: share.kind,
           label: share.label,
           address: addresses[i]!,
           amountCents: share.amountCents,

@@ -24,3 +24,4 @@
 @media (min-width: 640px) {
   .pp-shares > li { grid-template-columns: 1fr auto; align-items: center; }
 }
+.pp-split__fixed { margin: var(--space-2) 0 0; font-size: var(--text-sm); color: var(--color-text-muted); }

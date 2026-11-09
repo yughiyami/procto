@@ -3,6 +3,7 @@ import { Alert, Badge, Button } from '@izumi/ui';
 import { formatPen } from '@izumi/contracts';
 import type { Order } from '@izumi/contracts';
 import { useChainEvents, useChainOrder } from '../../hooks/useChainOrder';
+import { PLATFORM_ACCOUNTS } from '../../stellar/platform';
 import { CONTRACT_ID, explorerAccount, explorerContract, explorerTx, shortAddress, tokenByContract } from '../../stellar/config';
 import { EVENT_LABELS, TX_LABELS } from '../../stellar/eventLabels';
 import { orderPhase, shareState } from '../../stellar/shareStatus';
@@ -94,6 +95,12 @@ export function ReceiptView({ chainOrderId, order, knownTxs = [] }: Props) {
           {o.shares.map((s, i) => {
             const st = shareState(s, status);
             const advanced = s.owner !== s.supplier;
+            const platformNote =
+              s.supplier === PLATFORM_ACCOUNTS.impact
+                ? '8% de nuestra comisión va a reforestación y comunidades andinas.'
+                : s.supplier === PLATFORM_ACCOUNTS.treasury
+                  ? 'Comisión de PROCTO por la venta cerrada.'
+                  : null;
             return (
               <li key={i}>
                 <div>
@@ -111,6 +118,7 @@ export function ReceiptView({ chainOrderId, order, knownTxs = [] }: Props) {
                     </a>
                     {advanced && ' (inversionista que adelantó el pago)'}
                   </small>
+                  {platformNote && <small className="receipt__platform">{platformNote}</small>}
                 </div>
               </li>
             );

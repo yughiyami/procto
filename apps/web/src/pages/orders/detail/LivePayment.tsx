@@ -12,6 +12,7 @@ import { useSession } from '../../../session/SessionContext';
 import { confirmDelivery, fundChainOrder } from '../../../stellar/chain';
 import type { TxOutcome } from '../../../stellar/chain';
 import { explorerContract, explorerTx, shortAddress } from '../../../stellar/config';
+import { PLATFORM_ACCOUNTS } from '../../../stellar/platform';
 import type { ChainTxKind } from '../../../store/localStore';
 import { orderPhase, shareState } from '../../../stellar/shareStatus';
 import { formatToken, tokenUnitsToPenCents } from '../../../stellar/units';
@@ -122,6 +123,8 @@ export function LivePayment({ order }: { order: Order }) {
           const meta = link.shares[i];
           const paidTx = tx('confirm_delivery', i);
           const soldToInvestor = share.owner !== share.supplier;
+          const isImpact = share.supplier === PLATFORM_ACCOUNTS.impact;
+          const isPlatform = isImpact || share.supplier === PLATFORM_ACCOUNTS.treasury;
           return (
             <li key={i}>
               <div className="pp-shares__main">
@@ -130,6 +133,11 @@ export function LivePayment({ order }: { order: Order }) {
                   {formatPen(tokenUnitsToPenCents(share.amount))} <small>≈ {formatToken(share.amount)} USD</small>
                 </span>
                 <small>
+                  {isImpact
+                    ? '8% de nuestra comisión va a reforestación y comunidades andinas · '
+                    : isPlatform
+                      ? 'Comisión de PROCTO por la venta cerrada · '
+                      : ''}
                   Cobra en la cuenta {shortAddress(share.supplier)}
                   {soldToInvestor && ` · adelanto: ahora cobra ${shortAddress(share.owner)}`}
                   {meta && meta.address !== share.supplier ? '' : ''}
@@ -144,7 +152,7 @@ export function LivePayment({ order }: { order: Order }) {
                 )}
                 {status === 'Funded' && !share.paid && isBuyer && (
                   <Button size="sm" onClick={() => void pay(i)} loading={busy === `pay-${i}`}>
-                    Confirmar entrega y pagar
+                    {isPlatform ? 'Liberar comisión' : 'Confirmar entrega y pagar'}
                   </Button>
                 )}
               </div>

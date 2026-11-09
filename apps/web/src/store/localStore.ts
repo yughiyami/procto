@@ -18,8 +18,10 @@ export type StoredInvitation = {
 };
 
 export type ChainShare = {
-  /** Local supplier id; null for the coordinator's own share. */
+  /** Local supplier id; null for the coordinator's own share and the platform shares. */
   supplierId: string | null;
+  /** workshop | coordinator | platform | impact. Absent on links saved before the commission existed. */
+  kind?: 'workshop' | 'coordinator' | 'platform' | 'impact';
   label: string;
   /** Stellar account that gets paid for this share. */
   address: string;

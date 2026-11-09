@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { StrKey } from '@stellar/stellar-sdk';
 import { Alert, Button, Input, useToast } from '@izumi/ui';
 import { formatPen } from '@izumi/contracts';
@@ -7,10 +8,12 @@ import { store } from '../../../lib/apiClient';
 import { useChainAction } from '../../../hooks/useChainAction';
 import { useSession } from '../../../session/SessionContext';
 import { createChainOrder, getBalances, prepareAccount } from '../../../stellar/chain';
-import { DEFAULT_TOKEN, TOKENS } from '../../../stellar/config';
+import { DEFAULT_TOKEN, TOKENS, shortAddress } from '../../../stellar/config';
 import { friendlyError } from '../../../stellar/errors';
 import { buildShares, suggestDeadline } from '../../../stellar/mapping';
 import { formatToken, penCentsToTokenUnits } from '../../../stellar/units';
+import { describeCommission } from '../../../stellar/commission';
+import { useProfile } from '../../../profile/useProfile';
 
 type Props = { order: Order; suppliers: Supplier[]; onActivated: () => void };
 
@@ -21,9 +24,10 @@ export function ActivationForm({ order, suppliers, onActivated }: Props) {
   const { role, setRole, signer, ensureQuickSlot, signerOfSlot } = useSession();
   const { run, busy } = useChainAction();
   const toast = useToast();
-  const shares = useMemo(() => buildShares(order, suppliers), [order, suppliers]);
+  const profile = useProfile();
+  const shares = useMemo(() => buildShares(order, suppliers, { commission: { pro: profile.pro } }), [order, suppliers, profile.pro]);
   const [addresses, setAddresses] = useState<string[]>(() =>
-    shares.map((s) => (s.supplierId ? (store.supplierWallet(s.supplierId) ?? '') : '')),
+    shares.map((s) => s.address ?? (s.supplierId ? (store.supplierWallet(s.supplierId) ?? '') : '')),
   );
   const [working, setWorking] = useState<string | null>(null);
 
@@ -36,6 +40,10 @@ export function ActivationForm({ order, suppliers, onActivated }: Props) {
     try {
       const next: string[] = [];
       for (const share of shares) {
+        if (share.address) {
+          next.push(share.address);
+          continue;
+        }
         const slot = slotOf(share.supplierId);
         const connection = ensureQuickSlot(slot);
         const slotSigner = signerOfSlot(slot) ?? undefined;
@@ -107,6 +115,7 @@ export function ActivationForm({ order, suppliers, onActivated }: Props) {
       deadline,
       shares: shares.map((share, i) => ({
         supplierId: share.supplierId,
+        kind: share.kind,
         label: share.label,
         address: addresses[i]!,
         amountCents: share.amountCents,
@@ -132,16 +141,25 @@ export function ActivationForm({ order, suppliers, onActivated }: Props) {
                 {formatPen(share.amountCents)} <small>≈ {formatToken(penCentsToTokenUnits(share.amountCents))} USD</small>
               </span>
             </div>
-            <label className="pp-split__wallet">
-              Cuenta donde cobra
-              <Input
-                value={addresses[i] ?? ''}
-                onChange={(e) => setAddress(i, e.target.value)}
-                placeholder="Pega la dirección de su billetera (empieza con G)"
-                spellCheck={false}
-                autoComplete="off"
-              />
-            </label>
+            {share.address ? (
+              <p className="pp-split__fixed">
+                {share.kind === 'impact'
+                  ? 'Va automáticamente al fondo de impacto: 8% de la comisión de PROCTO.'
+                  : 'Se paga automáticamente a PROCTO cuando se cobra el pedido.'}{' '}
+                <small>Cuenta {shortAddress(share.address)}</small>
+              </p>
+            ) : (
+              <label className="pp-split__wallet">
+                Cuenta donde cobra
+                <Input
+                  value={addresses[i] ?? ''}
+                  onChange={(e) => setAddress(i, e.target.value)}
+                  placeholder="Pega la dirección de su billetera (empieza con G)"
+                  spellCheck={false}
+                  autoComplete="off"
+                />
+              </label>
+            )}
           </li>
         ))}
         <li className="pp-split__total">
@@ -149,6 +167,9 @@ export function ActivationForm({ order, suppliers, onActivated }: Props) {
           <strong>{formatPen(total)}</strong>
         </li>
       </ul>
+      <p className="pp-note">
+        {describeCommission(profile.pro)} {profile.pro ? '' : <>Con una cuenta PRO es 2%: actívala en <Link to="/negocio">Mi negocio</Link>.</>}
+      </p>
       <p className="pp-note">
         Tasa de demostración fija: S/ 3.75 por dólar digital. El plazo máximo para entregar es el día de entrega más 7 días.
       </p>
