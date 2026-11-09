@@ -54,8 +54,7 @@ export async function GET(): Promise<Response> {
       probe = { at: Date.now(), ok: text.trim().length > 0 };
     } catch (error) {
       // The class and first line of the message are enough to tell a missing credit or token from an outage.
-      probe = { at: Date.now(), ok: false, reason: (error instanceof Error ? `${error.name}: ${error.message}` : 'unknown').split('
-')[0]!.slice(0, 200) };
+      probe = { at: Date.now(), ok: false, reason: (error instanceof Error ? `${error.name}: ${error.message}` : 'unknown').split(/\r?\n/)[0]!.slice(0, 200) };
     } finally {
       clearTimeout(timer);
     }
