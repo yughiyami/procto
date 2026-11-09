@@ -206,7 +206,7 @@ export function createExtrasClient(extras: ExtrasStore, orders: OrderApi) {
       s().inbox.unshift({
         id: randomId(),
         payload: { dedupeKey: randomHex(32), messageId: `sim-${randomHex(4)}`, sessionId: 1, sender: input.peer, text: input.text },
-        status: 'received',
+        status: 'pending',
         created_at: now(),
       });
       extras.persist();

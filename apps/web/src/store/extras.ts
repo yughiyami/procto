@@ -128,7 +128,7 @@ export function buildExtrasSeed(): ExtrasState {
     {
       id: randomId(),
       payload: { dedupeKey: randomHex(32), messageId: 'EJEMPLO-1', sessionId: 1, sender: jid, text: requestText },
-      status: 'received',
+      status: 'pending',
       created_at: iso(-2 * 3_600_000),
     },
   ];
