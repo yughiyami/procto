@@ -54,8 +54,8 @@ export type ChatMessage = {
  */
 export const OUTBOUND_STATUS_LABELS: Record<OutboundStatus, string> = {
   queued: 'En cola',
-  accepted: 'Aceptado por Wapi ó entrega no verificada',
-  sent: 'EnvÌo registrado ó entrega no verificada',
+  accepted: 'Aceptado por Wapi, entrega no verificada',
+  sent: 'Env√≠o registrado, entrega no verificada',
   unknown: 'Resultado no confirmado ‚Äî verificar manualmente',
   failed: 'Fall√≥ el env√≠o',
 };

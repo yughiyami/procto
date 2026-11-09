@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { ConfirmDialog } from '@izumi/ui';
-import { store } from '../lib/apiClient';
+import { extras, store } from '../lib/apiClient';
 
 /**
  * Discreet "Reiniciar demo": rebuilds the sample order from scratch and runs /demo again.
@@ -16,6 +16,7 @@ export function ResetDemoButton({ className }: { className?: string }) {
   async function reset() {
     await store.init();
     await store.reset();
+    extras.reset();
     queryClient.clear();
     setOpen(false);
     navigate('/demo');
