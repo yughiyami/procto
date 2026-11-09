@@ -105,7 +105,14 @@ pnpm --filter @izumi/web e2e         # real transactions on testnet (see below)
 
 `.env.local` is gitignored. Generate a sponsor with `stellar keys generate procto-sponsor --network testnet --fund`.
 
-### The demo, as a non-crypto person would use it
+### One-tap demo
+
+Open **https://procto-lovat.vercel.app/demo** (or `/demo?rol=comprador|proveedor|inversionista|coordinadora`, add
+`&tour=0` to skip the guided tour). It creates the five quick wallets, prepares each account (sponsored), loads demo
+money, accepts the quote of "300 chompas de alpaca" and activates the protected payment, with retries for testnet lag.
+It is idempotent, and "Reiniciar demo" (in Mi billetera) rebuilds the sample order while keeping the wallets.
+
+### The demo, step by step
 
 1. Open the app and pick **Comprador**, press "Crear billetera rápida" (or connect Freighter, xBull, ...), then
    "Preparar mi cuenta" and "Cargar saldo de prueba" in **Mi billetera**.
@@ -117,6 +124,52 @@ pnpm --filter @izumi/web e2e         # real transactions on testnet (see below)
 
 Quick wallets are throw-away testnet keys stored in the browser. They exist only so anyone can try the flow in a
 minute; see "Mainnet route".
+
+## Feature status
+
+Legend: **on-chain** = enforced by the Soroban contract or read from it; **off-chain** = lives in the browser
+(localStorage); **sample** = works with clearly labelled example data; **credentials** = needs an outside account.
+
+| Feature | Where | Where it runs | Status |
+| --- | --- | --- | --- |
+| Protected payment: deposit, split by contribution, pay on delivery, refund after deadline | Pedidos > Cobro protegido | on-chain | working |
+| Advances (sell a funded share at a discount) | Mis cobros, Adelantos | on-chain | working |
+| Verifiable receipt with stellar.expert links | Comprobante | on-chain | working |
+| Fee sponsorship and demo money | `/api/sponsor`, `/api/faucet` | serverless + on-chain | working |
+| **Ficha de cumplimiento** (earned badge: Bronce, Plata, Oro) | `/ficha/:address` | computed from contract state | working |
+| **Platform commission** 3% (2% PRO) as an automatic share; 8% of it to the impact fund as its own share | Cobro protegido, Comprobante | on-chain (no contract change) | working |
+| Verified profile, PRO toggle (US$ 240/yr, no real billing) | Mi negocio y PRO | off-chain | working (billing not implemented) |
+| Orders, quotes, contributions, deliveries, cash book, evidence chain | Pedidos, Caja | off-chain | working |
+| Suppliers and performance | Proveedores | off-chain | working |
+| Chat with clients and workshops | Conversaciones | off-chain simulator | working with sample data; **WhatsApp Business needs credentials** |
+| Proposals (an assistant suggests, a person approves) | Propuestas | off-chain, rules in the browser | working |
+| Inbox and request drafts from messages | Bandeja | off-chain, rules in the browser | working |
+| Financial draft from free text | Caja del pedido | off-chain, rules in the browser | working |
+| Sales pipeline | Ventas | off-chain | working |
+| Directory of companies with sources, import, interest map | Directorio y RFQ | off-chain | working with sample data |
+| RFQ repository | Directorio y RFQ | off-chain | working with sample data |
+| Global directories (Trade Map, TradeAtlas) live lookup | Directorio y RFQ > Fuentes | not connected | **credentials** |
+| **PACO** assistant | PACO, `/api/paco` | serverless via Vercel AI Gateway; scripted fallback | working (falls back to a basic guide if the gateway is unavailable) |
+| PACO by voice | PACO por voz | Vapi in the browser | **credentials** (`VITE_VAPI_PUBLIC_KEY`, assistant ids) |
+| Guided tour, one-tap demo | `/demo`, "?" | off-chain | working |
+| Group sharing (gremios) and Pedido Compartido | Pedidos (shared order with several workshops, invitations by link) | off-chain + on-chain payment | working; group-level accounts are not implemented |
+
+### Business model on-chain
+
+When the buyer activates the protected payment, the split adds two shares next to the workshops and the coordinator:
+the **PROCTO commission** (3% of the sale, 2% if the coordinator is PRO, taken out of the coordinator's share) and the
+**impact fund** (8% of that commission, reforestation and Andean communities through PRISMA). Both are ordinary
+shares of the same order, so the receipt shows them and no contract change was needed. The two accounts are testnet
+identities (`procto-treasury`, `procto-impact`) whose **public** keys are in `apps/web/src/stellar/platform.ts`; the
+secrets stay in stellar-cli.
+
+### PACO
+
+`apps/web/api/paco.ts` calls the AI SDK with a plain `provider/model` string through Vercel AI Gateway. On Vercel it
+authenticates with the project's OIDC token; locally run `vercel env pull` (or set `AI_GATEWAY_API_KEY`). The request
+carries the person's role, orders and payment state (sanitized, size-capped). The endpoint is rate limited (12
+questions a minute per caller) and always answers: if the gateway is missing or fails, scripted guidance in
+`src/paco/guidance.ts` replies instead.
 
 ## Testnet ids and links
 
@@ -133,7 +186,12 @@ minute; see "Mainnet route".
 - Screens: landing "Cómo funciona", Cobro protegido, provider (deliver, request advance), investor (buy advance),
   verifiable receipt, role switcher.
 - Tests: units, share mapping, factoring, share state, sponsor validation, faucet eligibility, local store.
-- Removed from the demo: chat, agents, voice, directory, sales, inbox, integrations, EVM pages.
+- Phase 2 (see "Feature status" below): Ficha de cumplimiento, platform commission with impact share, restored NEXO
+  sections on a local store, PACO assistant, grouped navigation.
+- Removed on purpose: the **EVM blockchain pages** (Sepolia / Minkaly escrow, local Hardhat demo, WhatsApp-purchase
+  panel). They are superseded by the Stellar contract: the same job (escrow, release, evidence) now runs on Soroban,
+  so keeping a second, unrelated chain in the UI only confused the story. Their code is still in the `kickoff` tag.
+- Removed because there are no accounts: `/login` and the mobile demo gateway. Identity is the wallet.
 
 ## Mainnet route
 
@@ -155,16 +213,17 @@ minute; see "Mainnet route".
   anyone can trigger a refund of unpaid shares to the buyer.
 - An investor who buys an advance bears delivery risk: if the buyer never confirms before the deadline, the funds
   are refunded to the buyer.
+- The chat simulator never sends to a real phone. Directory, RFQ and chat seeds are examples, not real contacts.
 - Orders, suppliers and quotes live in the browser's localStorage (per device). The on-chain state is shared;
   the commercial details are not synced between devices.
 - Quick wallets keep a secret key in localStorage. That is acceptable for testnet demos only.
 - The fee-sponsor rate limit is in memory per function instance (best effort). Production needs a shared store.
 - The contract was not independently audited. Original NEXO modules (`apps/api`) are kept for history and are not
   part of the PROCTO demo.
-- Serverless functions use `.js` relative import extensions for Node ESM; they were exercised locally through Vite
-  and the Node e2e script, not yet on a Vercel deployment.
+- Serverless functions use `.js` relative import extensions for Node ESM.
 
-## Deployment (not done here)
+## Deployment
 
-Set `SPONSOR_SECRET` and `ISSUER_SECRET` in the Vercel project, point the project root at `apps/web`
-(`vercel.json` is already there: Vite build, SPA rewrite that excludes `/api`, function duration).
+Deployed at https://procto-lovat.vercel.app (Vercel project `procto`, `npx vercel deploy --prod` from the repo root;
+`.vercelignore` keeps contracts and the old API out). Set `SPONSOR_SECRET` and `ISSUER_SECRET` in the Vercel project;
+PACO uses the project's OIDC token automatically.
